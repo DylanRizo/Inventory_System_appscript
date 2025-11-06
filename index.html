@@ -1,0 +1,3069 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+  <style>
+    html {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: manipulation;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #E8F4F8;
+      /* Evitar alto fijo que crea “pantallas blancas” */
+      height: auto !important;
+      min-height: 100dvh;
+      /* usar d*v* h para móviles */
+    }
+
+    /* Asegurar que el contenedor principal sea responsive */
+    .app-container {
+      /* Evitar forzar 100vh en móvil/desktop */
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      display: flex;
+      position: relative;
+      height: auto !important;
+      /* <— clave */
+      min-height: 100dvh;
+      /* solo mínimo, no fijo */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+
+    /* Botón hamburguesa para móvil */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 10000;
+      background: #2E86AB;
+      color: white;
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 8px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #2E86AB;
+      color: white;
+      flex-shrink: 0;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background: #1C5F7B;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 20px 0;
+    }
+
+    .nav-item {
+      margin: 5px 15px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      background: #5DADE2;
+      color: white;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      margin-right: 10px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      background: #FAFBFC;
+    }
+
+    .content-header {
+      background: white;
+      padding: 20px 30px;
+      border-bottom: 1px solid #e9ecef;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .content-header h2 {
+      color: #2E86AB;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .content-body {
+      padding: 30px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+      margin-bottom: 25px;
+      overflow: hidden;
+      border: 1px solid #E5F2F7;
+    }
+
+    .card-header {
+      padding: 20px;
+      background: #F0F8FC;
+      border-bottom: 1px solid #E5F2F7;
+      font-weight: 600;
+      color: #2E86AB;
+    }
+
+    .card-body {
+      padding: 25px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .form-group label {
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2E86AB;
+      font-size: 0.9rem;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 12px;
+      border: 2px solid #E5F2F7;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #5DADE2;
+      box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+    }
+
+    .autocomplete-container {
+      position: relative;
+    }
+
+    .autocomplete-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #5DADE2;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+    }
+
+    .autocomplete-item {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #E5F2F7;
+      transition: background 0.2s ease;
+    }
+
+    .autocomplete-item:hover {
+      background: #F0F8FC;
+    }
+
+    .autocomplete-code {
+      font-weight: 600;
+      color: #2E86AB;
+    }
+
+    .autocomplete-name {
+      color: #6c757d;
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary {
+      background: #5DADE2;
+      color: white;
+    }
+
+    .btn-success {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #E5F2F7;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      min-width: 600px;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #E5F2F7;
+    }
+
+    th {
+      background: #F0F8FC;
+      font-weight: 600;
+      color: #2E86AB;
+      font-size: 0.9rem;
+    }
+
+    tr:hover {
+      background: #F8FBFD;
+    }
+
+    .status-normal {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-low {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-zero {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .text-success {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .text-danger {
+      color: #dc3545;
+      font-weight: 600;
+    }
+
+    .text-info {
+      color: #17a2b8;
+      font-weight: 600;
+    }
+
+    .message {
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: 500;
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .message.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+
+    .message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #5DADE2;
+      font-style: italic;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+      border-left: 4px solid #5DADE2;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2E86AB;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      color: #6c757d;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .ubicacion-list {
+      margin-top: 20px;
+      padding: 15px;
+      background: #F0F8FC;
+      border-radius: 8px;
+      border: 1px solid #E5F2F7;
+    }
+
+    .ubicacion-item {
+      padding: 10px;
+      margin: 5px 0;
+      background: white;
+      border-radius: 6px;
+      border-left: 3px solid #5DADE2;
+    }
+
+    .ubicacion-header {
+      font-weight: 600;
+      color: #2E86AB;
+      margin-bottom: 5px;
+    }
+
+    .ubicacion-details {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+
+    /* ========== MODAL DE VENTAS ========== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 9999;
+      overflow-y: auto;
+      animation: fadeInModal 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    @keyframes fadeInModal {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .modal-venta {
+      background: white;
+      border-radius: 15px;
+      max-width: 1000px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-venta-header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: white;
+      padding: 25px 30px;
+      border-radius: 15px 15px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-venta-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-modal {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    .modal-venta-body {
+      padding: 30px;
+    }
+
+    .modal-section {
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #E5F2F7;
+    }
+
+    .modal-section:last-child {
+      border-bottom: none;
+    }
+
+    .modal-section-title {
+      color: #2E86AB;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .items-venta-list {
+      background: #F8FBFD;
+      border: 2px solid #E5F2F7;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .item-venta-row {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      position: relative;
+      transition: all 0.3s;
+    }
+
+    .item-venta-row:hover {
+      border-color: #5DADE2;
+      box-shadow: 0 4px 12px rgba(93, 173, 226, 0.2);
+    }
+
+    .item-venta-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #E5F2F7;
+    }
+
+    .item-number {
+      font-weight: 700;
+      color: #2E86AB;
+      font-size: 1rem;
+    }
+
+    .btn-remove-item {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-remove-item:hover {
+      background: #c0392b;
+      transform: scale(1.05);
+    }
+
+    .btn-add-item {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .btn-add-item:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .modal-venta-footer {
+      padding: 20px 30px;
+      background: #F8FBFD;
+      border-top: 2px solid #E5F2F7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 15px 15px;
+    }
+
+    .total-venta-display {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #2E86AB;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .autocomplete-venta-container {
+      position: relative;
+    }
+
+    .autocomplete-venta-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 2px solid #5DADE2;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .autocomplete-venta-item {
+      padding: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #E5F2F7;
+      transition: all 0.2s;
+    }
+
+    .autocomplete-venta-item:hover {
+      background: #5DADE2;
+      color: white;
+    }
+
+    .autocomplete-venta-item strong {
+      display: block;
+      font-size: 0.95rem;
+    }
+
+    .autocomplete-venta-item small {
+      display: block;
+      margin-top: 3px;
+      opacity: 0.8;
+      font-size: 0.85rem;
+    }
+
+    .required-field::after {
+      content: " *";
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+
+    /* Tablets (768px - 1024px) */
+    @media (max-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+      }
+
+      .stat-card {
+        padding: 20px;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .content-body {
+        padding: 20px;
+      }
+
+      .card-body {
+        padding: 20px;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+    }
+
+    /* Mobile (menos de 980px) */
+    @media screen and (max-width: 980px) {
+
+      /* 1) Nada de alturas fijas en móvil */
+      html,
+      body {
+        height: auto !important;
+      }
+
+      body {
+        min-height: 100dvh !important;
+        font-size: 14px;
+      }
+
+      .app-container {
+        display: block !important;
+        height: auto !important;
+        min-height: 100dvh !important;
+      }
+
+      /* 2) El contenido principal NO debe forzar 100vh */
+      .main-content {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden;
+        display: block !important;
+        height: auto !important;
+        min-height: auto !important;
+        /* <— quita el “bloque vacío” */
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* 3) Cabecera y cuerpo compactos */
+      .content-header {
+        padding: 65px 10px 12px 10px !important;
+        position: relative;
+      }
+
+      .content-header h2 {
+        font-size: 1.1rem !important;
+        margin: 0;
+      }
+
+      .content-body {
+        padding: 10px !important;
+        min-height: 0 !important;
+      }
+
+      /* 4) Tabs y tarjetas sin mínimos que estiren la página */
+      .tab-content,
+      .tab-content.active,
+      .card,
+      .card-header,
+      .card-body {
+        min-height: 0 !important;
+        height: auto !important;
+      }
+
+      .card {
+        margin-bottom: 15px;
+        border-radius: 8px;
+      }
+
+      .card-header {
+        padding: 12px !important;
+        font-size: 0.9rem;
+      }
+
+      .card-body {
+        padding: 12px !important;
+      }
+
+      /* 5) Botón hamburguesa y sidebar */
+      .menu-toggle {
+        display: block !important;
+      }
+
+      .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        /* slide-in ocupa la pantalla */
+        width: 280px;
+        max-width: 85vw;
+        z-index: 9998;
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0) !important;
+      }
+
+      /* 6) Formularios y tabla */
+      .form-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .form-group label {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+      }
+
+      input,
+      select,
+      textarea {
+        padding: 10px;
+        font-size: 16px !important;
+      }
+
+      /* evita zoom iOS */
+      .actions {
+        flex-direction: column !important;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .btn {
+        width: 100% !important;
+        justify-content: center;
+        padding: 10px 15px;
+        font-size: 0.85rem;
+      }
+
+      .table-container {
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -12px;
+        padding: 0 12px;
+      }
+
+      table {
+        font-size: 0.75rem;
+        min-width: 100%;
+        display: block;
+        overflow-x: auto;
+      }
+
+      th,
+      td {
+        padding: 8px 6px !important;
+        white-space: nowrap;
+      }
+
+      th {
+        font-size: 0.8rem;
+        position: sticky;
+        top: 0;
+        background: #F0F8FC;
+        z-index: 10;
+      }
+
+      /* 7) Dashboard: mejor reparto del ancho */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .stat-card {
+        padding: 12px !important;
+      }
+
+      .stat-value {
+        font-size: 1.4rem !important;
+      }
+
+      .stat-label {
+        font-size: 0.75rem !important;
+      }
+
+      /* 8) Modal más fluido en móvil */
+      .modal-overlay.active {
+        padding: 5px !important;
+        align-items: flex-start;
+      }
+
+      .modal-venta {
+        margin: 5px 0;
+        max-height: 98vh;
+        border-radius: 8px;
+        width: 100% !important;
+      }
+
+      .modal-venta-header {
+        padding: 12px 15px !important;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .modal-venta-body {
+        padding: 15px 10px !important;
+      }
+
+      .modal-venta-footer {
+        flex-direction: column !important;
+        gap: 12px;
+        padding: 12px 15px !important;
+        position: sticky;
+        bottom: 0;
+        background: #F8FBFD;
+        border-top: 2px solid #E5F2F7;
+      }
+
+      .total-venta-display {
+        text-align: center;
+        width: 100%;
+        font-size: 1.2rem !important;
+        padding: 8px;
+        background: #fff;
+        border-radius: 6px;
+      }
+
+      .modal-actions {
+        width: 100% !important;
+        flex-direction: column !important;
+        gap: 8px;
+      }
+
+      .modal-actions .btn {
+        width: 100% !important;
+      }
+    }
+
+    /* Afinado para pantallas muy pequeñas */
+    @media (max-width: 480px) {
+      .menu-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        top: 10px;
+        left: 10px;
+      }
+
+      .content-header {
+        padding: 55px 8px 10px 8px !important;
+      }
+
+      .content-header h2 {
+        font-size: 1rem !important;
+      }
+
+      .content-body {
+        padding: 8px !important;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px;
+      }
+
+      .stat-card {
+        padding: 10px !important;
+      }
+
+      .stat-value {
+        font-size: 1.5rem !important;
+      }
+
+      .stat-label {
+        font-size: 0.75rem !important;
+      }
+
+      table {
+        font-size: 0.7rem;
+      }
+
+      th,
+      td {
+        padding: 6px 4px !important;
+        font-size: 0.7rem;
+      }
+    }
+
+    /* Landscape móvil */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .modal-venta {
+        max-height: 95vh;
+      }
+
+      .modal-venta-body {
+        padding: 15px;
+      }
+
+      .modal-section {
+        margin-bottom: 15px;
+      }
+    }
+
+    html,
+    body {
+      height: auto !important;
+      min-height: auto !important;
+    }
+
+    .app-container,
+    .main-content,
+    .tab-content,
+    .tab-content.active {
+      height: auto !important;
+      min-height: auto !important;
+    }
+
+    /* 2) Asegurar que nada fuerce espacio extra por ser flex-item */
+    .app-container,
+    .main-content {
+      min-height: 0 !important;
+    }
+
+    /* 3) Evitar que el contraste resalte el área vacía (opcional: unifica fondo) */
+    body {
+      background: #FAFBFC !important;
+    }
+
+    /* ===== Parche Apps Script wrapper / márgenes UA ===== */
+    html,
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      height: auto !important;
+      min-height: 100dvh !important;
+    }
+
+    /* El “warning bar” que pone Apps Script */
+    table.full_size,
+    #warning-bar-table {
+      width: 100% !important;
+      height: auto !important;
+      border-collapse: collapse !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* Contenedor principal */
+    .app-container {
+      height: auto !important;
+      min-height: 100dvh !important;
+      max-width: 100vw !important;
+    }
+
+    /* Evita que componentes impongan alturas fijas */
+    .main-content,
+    .tab-content,
+    .card,
+    .card-header,
+    .card-body {
+      height: auto !important;
+      min-height: 0 !important;
+    }
+
+    /* iOS: evita zoom de inputs y saltos de layout */
+    @supports (-webkit-touch-callout: none) {
+
+      input,
+      select,
+      textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    @media (max-width: 980px) {
+
+      html,
+      body {
+        height: auto !important;
+        min-height: 100dvh !important;
+      }
+
+      .app-container {
+        display: block !important;
+      }
+
+      .main-content {
+        min-height: auto !important;
+      }
+    }
+
+    /* ========== ESTILOS PARA DASHBOARD ANALÍTICO ========== */
+
+    #analyticsContainer {
+      animation: fadeIn 0.5s ease;
+    }
+
+    .stat-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive para gráficos */
+    @media (max-width: 768px) {
+      #analyticsContainer canvas {
+        height: 200px !important;
+      }
+
+      #analyticsContainer .stats-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    #analyticsContainer .stat-card {
+      min-height: 130px !important;
+      padding: 20px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      overflow: visible !important;
+    }
+
+    #analyticsContainer .stat-value {
+      color: white !important;
+      font-size: 2.5rem !important;
+      font-weight: 700 !important;
+      margin-bottom: 8px !important;
+      line-height: 1.2 !important;
+    }
+
+    #analyticsContainer .stat-label {
+      color: white !important;
+      font-size: 0.95rem !important;
+      font-weight: 500 !important;
+      opacity: 0.95 !important;
+      line-height: 1.4 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  <div class="app-container">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>Comarca System</h1>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item"><a class="nav-link active"
+            onclick="showTab('dashboard', event)"><span class="nav-icon">📊</span>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('entrada', event)"><span class="nav-icon">📥</span>Entrada de Productos</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('movimientos', event)"><span class="nav-icon">📋</span>Movimientos</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('inventario', event)"><span class="nav-icon">📦</span>Inventario</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('buscar', event)"><span class="nav-icon">🔍</span>Buscar Producto</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('reportes', event)"><span class="nav-icon">📈</span>Reportes</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('configuracion', event)"><span class="nav-icon">⚙️</span>Configuración</a></li>
+        <li class="nav-item"><a class="nav-link"
+            onclick="showTab('analytics', event)"><span class="nav-icon">📊</span>Dashboard Analítico</a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <!-- DASHBOARD -->
+      <div id="dashboard" class="tab-content active">
+        <div class="content-header">
+          <h2>Dashboard General</h2>
+        </div>
+        <div class="content-body">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="card">
+            <div class="card-header">Alertas de Stock</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-primary" onclick="loadDashboard()">Actualizar</button>
+                <button class="btn btn-warning" onclick="showStockAlerts()">Ver Alertas</button>
+              </div>
+              <div id="alertsContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTRADA DE PRODUCTOS -->
+      <div id="entrada" class="tab-content">
+        <div class="content-header">
+          <h2>Entrada de Productos</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Registrar Entrada de Producto</div>
+            <div class="card-body">
+              <form id="formEntrada" onsubmit="registrarEntrada(event)">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="codigoEntrada">Código del Producto *</label>
+                    <div class="autocomplete-container">
+                      <input id="codigoEntrada" type="text" placeholder="Código" required onkeyup="buscarProductoEntrada()" onblur="ocultarAutocompletadoEntrada()">
+                      <div id="autocompleteEntrada" class="autocomplete-dropdown"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nombreEntrada">Nombre *</label>
+                    <input id="nombreEntrada" type="text" placeholder="Nombre del producto" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="unidadEntrada">Unidad de Medida *</label>
+                    <select id="unidadEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="grupoEntrada">Grupo *</label>
+                    <select id="grupoEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="cantidadEntrada">Cantidad *</label>
+                    <input id="cantidadEntrada" type="number" min="0.01" step="0.01" placeholder="Cantidad" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="costoEntrada">Costo Unitario</label>
+                    <input id="costoEntrada" type="number" min="0" step="0.01" placeholder="Costo" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="precioEntrada">Precio de Venta *</label>
+                    <input id="precioEntrada" type="number" min="0.01" step="0.01" placeholder="Precio" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="stockMinEntrada">Stock Mínimo</label>
+                    <input id="stockMinEntrada" type="number" min="0" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="almacenEntrada">Ubicación/Casa *</label>
+                    <select id="almacenEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="descripcionEntrada">Descripción</label>
+                    <textarea id="descripcionEntrada" placeholder="Descripción del producto" rows="2"></textarea>
+                  </div>
+                </div>
+                <div class="actions">
+                  <button type="submit" class="btn btn-success">Registrar Entrada</button>
+                  <button type="button" class="btn btn-secondary" onclick="limpiarFormEntrada()">Limpiar</button>
+                </div>
+              </form>
+              <div id="msgEntrada"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOVIMIENTOS -->
+      <div id="movimientos" class="tab-content">
+        <div class="content-header">
+          <h2>Registro de Movimientos</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Nuevo Movimiento</div>
+            <div class="card-body">
+              <form id="formMovimiento" onsubmit="registrarMovimiento(event)">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="codigoMov">Código *</label>
+                    <div class="autocomplete-container">
+                      <input id="codigoMov" type="text" placeholder="Código" required onkeyup="buscarProductoAutocompletado()" onblur="ocultarAutocompletado()">
+                      <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="fechaMov">Fecha *</label>
+                    <input id="fechaMov" type="date" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="tipoMov">Tipo *</label>
+                    <select id="tipoMov" required onchange="handleTipoChange()">
+                      <option value="SALIDA">Salida</option>
+                      <option value="VENTA">Venta</option>
+                      <option value="AJUSTE_POSITIVO">Ajuste +</option>
+                      <option value="AJUSTE_NEGATIVO">Ajuste -</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="cantMov">Cantidad *</label>
+                    <input id="cantMov" type="number" min="0.01" step="0.01" placeholder="Cantidad" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="obsMov">Observaciones</label>
+                    <textarea id="obsMov" placeholder="Observaciones" rows="3"></textarea>
+                  </div>
+                </div>
+                <div class="actions">
+                  <button type="submit" class="btn btn-success">Guardar</button>
+                  <button type="button" class="btn btn-secondary" onclick="limpiarFormMovimiento()">Limpiar</button>
+                </div>
+              </form>
+              <div id="msgMov"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INVENTARIO -->
+      <div id="inventario" class="tab-content">
+        <div class="content-header">
+          <h2>Inventario</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Stock Actual</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarStock()">Actualizar</button>
+                <button class="btn btn-success" onclick="exportarStock()">Exportar CSV</button>
+                <button class="btn btn-warning" onclick="mostrarAlertas()">Solo Alertas</button>
+              </div>
+              <div id="loading" class="loading">Cargando...</div>
+              <div class="table-container">
+                <div id="stockTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUSCAR PRODUCTO -->
+      <div id="buscar" class="tab-content">
+        <div class="content-header">
+          <h2>Buscar Producto</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Buscar por Código o Nombre</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="buscarTexto">Código o Nombre</label>
+                  <input id="buscarTexto" type="text" placeholder="Buscar..." onkeyup="buscarEnTiempoReal()">
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="buscarProducto()">Buscar</button>
+                <button class="btn btn-secondary" onclick="limpiarBusqueda()">Limpiar</button>
+              </div>
+              <div id="resultadosBusqueda"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTES -->
+      <div id="reportes" class="tab-content">
+        <div class="content-header">
+          <h2>Reportes</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Historial de Movimientos</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fechaDesde">Desde</label>
+                  <input id="fechaDesde" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="fechaHasta">Hasta</label>
+                  <input id="fechaHasta" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="filtroTipo">Tipo</label>
+                  <select id="filtroTipo">
+                    <option value="">Todos</option>
+                    <option value="INGRESO">Ingresos</option>
+                    <option value="SALIDA">Salidas</option>
+                    <option value="VENTA">Ventas</option>
+                    <option value="AJUSTE_POSITIVO">Ajustes +</option>
+                    <option value="AJUSTE_NEGATIVO">Ajustes -</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarHistorial()">Generar</button>
+                <button class="btn btn-success" onclick="exportarReporte()">Exportar</button>
+              </div>
+              <div class="table-container">
+                <div id="historialTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+      <!-- CONFIGURACIÓN -->
+      <div id="configuracion" class="tab-content">
+        <div class="content-header">
+          <h2>Configuración</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Herramientas del Sistema</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-info" onclick="validarIntegridad()">Validar Integridad</button>
+                <button class="btn btn-success" onclick="inicializarSistema()">Inicializar Sistema</button>
+                <button class="btn btn-warning" onclick="limpiarTodosFormularios()">Limpiar Formularios</button>
+              </div>
+              <div id="configResults"></div>
+            </div>
+          </div>
+        </div>
+       
+
+      </div>
+       <!-- DASHBOARD ANALÍTICO -->
+        <div id="analytics" class="tab-content">
+          <div class="content-header">
+            <h2>📊 Dashboard Analítico</h2>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div id="analyticsContainer"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL DE VENTAS -->
+  <div id="modalVenta" class="modal-overlay">
+    <div class="modal-venta">
+      <div class="modal-venta-header">
+        <h2>🛒 Registro de Venta</h2>
+        <button class="close-modal" onclick="cerrarModalVenta()">&times;</button>
+      </div>
+
+      <form id="formVenta" onsubmit="registrarVentaDetallada(event)">
+        <div class="modal-venta-body">
+
+          <!-- SECCIÓN: INFORMACIÓN DEL VENDEDOR -->
+          <div class="modal-section">
+            <div class="modal-section-title">👤 Información del Vendedor</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Nombre del Vendedor</label>
+                <input type="text" id="ventaVendedor" placeholder="ej: Dylan Rizo" required>
+              </div>
+              <div class="form-group">
+                <label>Persona que realizó la entrega</label>
+                <input type="text" id="ventaEntregador" placeholder="ej: Jean">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: PRODUCTOS VENDIDOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">📦 Productos Vendidos</div>
+            <div class="items-venta-list" id="itemsVentaList">
+              <!-- Los items se generarán dinámicamente -->
+            </div>
+            <button type="button" class="btn-add-item" onclick="agregarItemVenta()">
+              ➕ Agregar Producto
+            </button>
+          </div>
+
+          <!-- SECCIÓN: MONTOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">💰 Información de Pago</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Monto Cobrado</label>
+                <input type="number" id="ventaMontoCobrado" min="0" step="0.01" placeholder="0.00" required onchange="calcularTotalVenta()">
+              </div>
+              <div class="form-group">
+                <label>Envío Cobrado</label>
+                <input type="number" id="ventaEnvioCobrado" min="0" step="0.01" placeholder="0.00" value="0" onchange="calcularTotalVenta()">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: UBICACIONES -->
+          <div class="modal-section">
+            <div class="modal-section-title">📍 Ubicaciones</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Lugar de Extracción del Inventario</label>
+                <select id="ventaLugarExtraccion" required>
+                  <option value="">Seleccione...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="required-field">Lugar donde se hizo la entrega</label>
+                <input type="text" id="ventaLugarEntrega" placeholder="ej: Casa del cliente, Oficina, etc." required>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: HORARIOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">🕐 Horarios de Entrega</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Hora de Salida</label>
+                <input type="time" id="ventaHoraSalida" required>
+              </div>
+              <div class="form-group">
+                <label>Hora de Finalización</label>
+                <input type="time" id="ventaHoraFinalizacion">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: OBSERVACIONES -->
+          <div class="modal-section">
+            <div class="form-group">
+              <label>Observaciones Adicionales</label>
+              <textarea id="ventaObservaciones" rows="3" placeholder="Notas adicionales sobre la venta..."></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-venta-footer">
+          <div class="total-venta-display">
+            Total: $<span id="totalVentaDisplay">0.00</span>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalVenta()">Cancelar</button>
+            <button type="submit" class="btn btn-success">💾 Registrar Venta</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentTab = 'dashboard';
+    let searchTimeout;
+    let autocompleteTimeout;
+    let contadorItemsVenta = 0;
+    let itemsVentaData = [];
+
+  function initializeApp() {
+  setDefaultDates();
+  loadListas();
+  loadUbicaciones();
+  loadDashboard();
+  
+  // Detectar dispositivo móvil y forzar estilos
+  checkMobileDevice();
+  setVh();
+}
+
+function checkMobileDevice() {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isSmall = window.innerWidth <= 768;
+    if (isMobile || isSmall) document.body.classList.add('mobile-device');
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth <= 768) document.body.classList.add('mobile-device');
+      else { document.body.classList.remove('mobile-device'); closeSidebar?.(); }
+      setVh();
+    });
+    window.addEventListener('orientationchange', setVh);
+  }
+
+  function setVh() {
+    const vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+  }
+    function setDefaultDates() {
+      const today = new Date();
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      document.getElementById("fechaMov").valueAsDate = today;
+      document.getElementById("fechaDesde").valueAsDate = lastMonth;
+      document.getElementById("fechaHasta").valueAsDate = today;
+    }
+
+    function showTab(tab, event) {
+      if (event) event.preventDefault();
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      
+      if (event && event.target) {
+        const link = event.target.classList.contains('nav-link') ? event.target : event.target.closest('.nav-link');
+        if (link) link.classList.add('active');
+      }
+      
+      currentTab = tab;
+      
+      // Cerrar sidebar en móvil al cambiar de tab
+      if (window.innerWidth <= 768) {
+        closeSidebar();
+      }
+      
+      if (tab === 'dashboard') loadDashboard();
+      if (tab === 'inventario') mostrarStock();
+        // AGREGAR ESTA LÍNEA AQUÍ 👇
+      if (tab === 'analytics') loadAnalyticsDashboard();
+    }
+
+    // ========== FUNCIONES DEL MENÚ RESPONSIVE ==========
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.remove('open');
+    }
+
+    // Cerrar sidebar al hacer click fuera en móvil
+    document.addEventListener('click', function(e) {
+      const sidebar = document.getElementById('sidebar');
+      const menuToggle = document.querySelector('.menu-toggle');
+      
+      if (window.innerWidth <= 768) {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+          closeSidebar();
+        }
+      }
+    });
+
+    function loadDashboard() {
+      google.script.run
+        .withSuccessHandler(resumen => {
+          document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-value">${resumen.totalProductos}</div><div class="stat-label">Productos</div></div>
+            <div class="stat-card"><div class="stat-value">${resumen.totalMovimientos}</div><div class="stat-label">Movimientos</div></div>
+            <div class="stat-card"><div class="stat-value">${resumen.sinStock}</div><div class="stat-label">Sin Stock</div></div>
+            <div class="stat-card"><div class="stat-value">${resumen.stockBajo}</div><div class="stat-label">Stock Bajo</div></div>
+            <div class="stat-card"><div class="stat-value">$${resumen.valorTotalInventario.toFixed(2)}</div><div class="stat-label">Valor Total</div></div>
+          `;
+        })
+        .withFailureHandler(error => showMessage('statsGrid', 'Error: ' + error, 'error'))
+        .obtenerResumen();
+    }
+
+    function showStockAlerts() {
+      google.script.run
+        .withSuccessHandler(stock => {
+          const alertas = stock.filter(p => p.cantidad <= 0 || (p.cantidad <= p.stockMin && p.stockMin > 0));
+          const container = document.getElementById('alertsContainer');
+          
+          if (alertas.length === 0) {
+            container.innerHTML = '<div class="message success">No hay alertas</div>';
+            return;
+          }
+
+          let html = `<div class="message warning"><strong>${alertas.length} producto(s) requieren atención</strong></div>`;
+          html += '<table><thead><tr><th>Código</th><th>Nombre</th><th>Stock</th><th>Mín.</th><th>Precio</th><th>Estado</th></tr></thead><tbody>';
+          
+          alertas.forEach(p => {
+            const estado = p.cantidad <= 0 ? 'Sin Stock' : 'Stock Bajo';
+            const cssClass = p.cantidad <= 0 ? 'status-zero' : 'status-low';
+            html += `<tr class="${cssClass}">
+              <td>${p.codigo}</td>
+              <td>${p.nombre}</td>
+              <td>${p.cantidad}</td>
+              <td>${p.stockMin}</td>
+              <td>$${p.precio.toFixed(2)}</td>
+              <td>${estado}</td>
+            </tr>`;
+          });
+          
+          html += '</tbody></table>';
+          container.innerHTML = html;
+        })
+        .obtenerStock();
+    }
+
+    function loadListas() {
+      google.script.run
+        .withSuccessHandler(listas => {
+          const unidadSelect = document.getElementById("unidadEntrada");
+          const grupoSelect = document.getElementById("grupoEntrada");
+          unidadSelect.innerHTML = "";
+          grupoSelect.innerHTML = "";
+          listas.unidades.forEach(u => unidadSelect.innerHTML += `<option value="${u}">${u}</option>`);
+          listas.grupos.forEach(g => grupoSelect.innerHTML += `<option value="${g}">${g}</option>`);
+        })
+        .obtenerListas();
+    }
+
+    function loadUbicaciones() {
+      google.script.run
+        .withSuccessHandler(ubicaciones => {
+          const select = document.getElementById("almacenEntrada");
+          select.innerHTML = "";
+          if (!ubicaciones || ubicaciones.length === 0) {
+            select.innerHTML = '<option value="Casa Luden">Casa Luden</option><option value="Casa Jean">Casa Jean</option><option value="Casa Dylan">Casa Dylan</option>';
+            return;
+          }
+          ubicaciones.forEach(ub => select.innerHTML += `<option value="${ub}">${ub}</option>`);
+        })
+        .withFailureHandler(error => {
+          const select = document.getElementById("almacenEntrada");
+          select.innerHTML = '<option value="Casa Luden">Casa Luden</option><option value="Casa Jean">Casa Jean</option><option value="Casa Dylan">Casa Dylan</option>';
+        })
+        .obtenerUbicaciones();
+    }
+
+    function buscarProductoAutocompletado() {
+      clearTimeout(autocompleteTimeout);
+      const codigo = document.getElementById("codigoMov").value.trim().toUpperCase();
+      if (codigo.length === 0) {
+        document.getElementById("autocompleteDropdown").style.display = "none";
+        return;
+      }
+      autocompleteTimeout = setTimeout(() => {
+        google.script.run.withSuccessHandler(mostrarAutocompletado).buscarProductoPorCodigo(codigo);
+      }, 200);
+    }
+
+    function mostrarAutocompletado(productos = []) {
+      const dropdown = document.getElementById("autocompleteDropdown");
+      if (productos.length === 0) {
+        dropdown.style.display = "none";
+        return;
+      }
+      let html = "";
+      productos.forEach(p => {
+        html += `<div class="autocomplete-item" onmousedown="seleccionarProducto('${p.codigo}','${p.nombre}')">
+          <div class="autocomplete-code">${p.codigo}</div>
+          <div class="autocomplete-name">${p.nombre}</div>
+        </div>`;
+      });
+      dropdown.innerHTML = html;
+      dropdown.style.display = "block";
+    }
+
+    function seleccionarProducto(codigo, nombre) {
+      document.getElementById("codigoMov").value = codigo;
+      document.getElementById("autocompleteDropdown").style.display = "none";
+    }
+
+    function ocultarAutocompletado() {
+      setTimeout(() => document.getElementById("autocompleteDropdown").style.display = "none", 150);
+    }
+
+    function buscarProductoEntrada() {
+      clearTimeout(autocompleteTimeout);
+      const codigo = document.getElementById("codigoEntrada").value.trim().toUpperCase();
+      if (codigo.length === 0) {
+        document.getElementById("autocompleteEntrada").style.display = "none";
+        return;
+      }
+      autocompleteTimeout = setTimeout(() => {
+        google.script.run.withSuccessHandler(mostrarAutocompletadoEntrada).buscarProductoPorCodigo(codigo);
+      }, 200);
+    }
+
+    function mostrarAutocompletadoEntrada(productos = []) {
+      const dropdown = document.getElementById("autocompleteEntrada");
+      if (productos.length === 0) {
+        dropdown.style.display = "none";
+        return;
+      }
+      let html = "";
+      productos.forEach(p => {
+        html += `<div class="autocomplete-item" onmousedown="seleccionarProductoEntrada('${p.codigo}','${p.nombre}',${p.precio})">
+          <div class="autocomplete-code">${p.codigo}</div>
+          <div class="autocomplete-name">${p.nombre} - $${p.precio}</div>
+        </div>`;
+      });
+      dropdown.innerHTML = html;
+      dropdown.style.display = "block";
+    }
+
+    function seleccionarProductoEntrada(codigo, nombre, precio) {
+      document.getElementById("codigoEntrada").value = codigo;
+      document.getElementById("nombreEntrada").value = nombre;
+      document.getElementById("precioEntrada").value = precio;
+      document.getElementById("autocompleteEntrada").style.display = "none";
+    }
+
+    function ocultarAutocompletadoEntrada() {
+      setTimeout(() => document.getElementById("autocompleteEntrada").style.display = "none", 150);
+    }
+
+    function registrarEntrada(event) {
+      event.preventDefault();
+      const datos = {
+        codigo: document.getElementById("codigoEntrada").value.trim().toUpperCase(),
+        nombre: document.getElementById("nombreEntrada").value.trim(),
+        unidad: document.getElementById("unidadEntrada").value,
+        grupo: document.getElementById("grupoEntrada").value,
+        cantidad: parseFloat(document.getElementById("cantidadEntrada").value) || 0,
+        costo: parseFloat(document.getElementById("costoEntrada").value) || 0,
+        precio: parseFloat(document.getElementById("precioEntrada").value) || 0,
+        stockMin: parseInt(document.getElementById("stockMinEntrada").value) || 0,
+        almacen: document.getElementById("almacenEntrada").value.trim(),
+        descripcion: document.getElementById("descripcionEntrada").value.trim()
+      };
+
+      if (!datos.codigo || !datos.nombre || !datos.almacen || datos.cantidad <= 0 || datos.precio <= 0) {
+        showMessage('msgEntrada', 'Complete todos los campos obligatorios', 'error');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(msg => {
+          showMessage('msgEntrada', msg, msg.includes('correctamente') || msg.includes('✅') ? 'success' : 'error');
+          if (msg.includes('correctamente')) document.getElementById('formEntrada').reset();
+        })
+        .withFailureHandler(error => showMessage('msgEntrada', 'Error: ' + error, 'error'))
+        .insertarProductoConUbicacion(datos);
+    }
+
+    function registrarMovimiento(event) {
+      event.preventDefault();
+      const datos = {
+        codigo: document.getElementById("codigoMov").value.trim().toUpperCase(),
+        fecha: document.getElementById("fechaMov").value,
+        tipo: document.getElementById("tipoMov").value,
+        cantidad: parseFloat(document.getElementById("cantMov").value) || 0,
+        observaciones: document.getElementById("obsMov").value.trim()
+      };
+
+      if (!datos.codigo || !datos.fecha || datos.cantidad <= 0) {
+        showMessage('msgMov', 'Complete todos los campos', 'error');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(msg => {
+          showMessage('msgMov', msg, msg.includes('correctamente') ? 'success' : 'error');
+          if (msg.includes('correctamente')) {
+            document.getElementById('formMovimiento').reset();
+            document.getElementById("fechaMov").valueAsDate = new Date();
+          }
+        })
+        .withFailureHandler(error => showMessage('msgMov', 'Error: ' + error, 'error'))
+        .registrarMovimiento(datos);
+    }
+
+    function handleTipoChange() {
+      const tipo = document.getElementById("tipoMov").value;
+      
+      if (tipo === 'VENTA') {
+        abrirModalVenta();
+      } else {
+        const placeholders = {
+          'SALIDA': 'Cantidad a retirar',
+          'AJUSTE_POSITIVO': 'Cantidad a aumentar',
+          'AJUSTE_NEGATIVO': 'Cantidad a disminuir'
+        };
+        const cantField = document.getElementById("cantMov");
+        if (cantField) {
+          cantField.placeholder = placeholders[tipo] || 'Cantidad';
+        }
+      }
+    }
+
+    function buscarProducto() {
+      const texto = document.getElementById("buscarTexto").value.trim();
+      if (!texto) {
+        showMessage('resultadosBusqueda', 'Ingrese texto', 'warning');
+        return;
+      }
+      google.script.run
+        .withSuccessHandler(displaySearchResults)
+        .withFailureHandler(error => showMessage('resultadosBusqueda', 'Error: ' + error, 'error'))
+        .buscarProducto(texto);
+    }
+
+    function buscarEnTiempoReal() {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const texto = document.getElementById("buscarTexto").value.trim();
+        if (texto.length >= 2) {
+          buscarProducto();
+        } else if (texto.length === 0) {
+          document.getElementById('resultadosBusqueda').innerHTML = '';
+        }
+      }, 300);
+    }
+
+    function displaySearchResults(results) {
+      const container = document.getElementById('resultadosBusqueda');
+      if (results.length === 0) {
+        container.innerHTML = '<div class="message warning">No se encontraron productos</div>';
+        return;
+      }
+
+      let html = '<div class="message info"><strong>Resultados de búsqueda</strong></div>';
+      html += '<table><thead><tr><th>Código</th><th>Nombre</th><th>Grupo</th><th>Stock Total</th><th>Precio</th><th>Detalles</th></tr></thead><tbody>';
+      
+      results.forEach(r => {
+        const [codigo, nombre, unidad, grupo, stockMin, stock, precio] = r;
+        html += `<tr>
+          <td>${codigo}</td>
+          <td>${nombre}</td>
+          <td>${grupo}</td>
+          <td>${stock}</td>
+          <td>$${precio.toFixed(2)}</td>
+          <td><button class="btn btn-info" onclick="verDetalleUbicaciones('${codigo}')">Ver Ubicaciones</button></td>
+        </tr>`;
+      });
+      
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function verDetalleUbicaciones(codigo) {
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          if (!resultado) {
+            showMessage('resultadosBusqueda', '❌ No se recibió respuesta del servidor', 'error');
+            return;
+          }
+          
+          if (resultado.error) {
+            showMessage('resultadosBusqueda', resultado.error, 'error');
+            return;
+          }
+          
+          if (resultado.mensaje) {
+            showMessage('resultadosBusqueda', resultado.mensaje, 'warning');
+            return;
+          }
+          
+          if (!resultado.coincidencias || resultado.coincidencias.length === 0) {
+            showMessage('resultadosBusqueda', '⚠️ No se encontraron ubicaciones para: ' + codigo, 'warning');
+            return;
+          }
+          
+          let html = '<div class="message success">';
+          html += '<strong>✅ ' + resultado.coincidencias.length + ' ubicación(es) encontrada(s) para: ' + resultado.codigo + '</strong><br>';
+          html += '📦 Total en inventario: ' + resultado.totalCantidad + ' unidades';
+          html += '</div><div class="ubicacion-list">';
+          
+          resultado.coincidencias.forEach(function(ub) {
+            html += '<div class="ubicacion-item">';
+            html += '<div class="ubicacion-header">📍 ' + (ub.ubicacion || 'Sin ubicación') + '</div>';
+            html += '<div class="ubicacion-details">';
+            html += '🏷️ ' + (ub.nombre || 'Sin nombre') + '<br>';
+            html += '📊 Cantidad: ' + (ub.cantidad || 0) + '<br>';
+            html += '💰 Precio: $' + (ub.precio ? ub.precio.toFixed(2) : '0.00') + '<br>';
+            html += '💵 Costo: $' + (ub.costo ? ub.costo.toFixed(2) : '0.00') + '<br>';
+            html += '📝 ' + (ub.descripcion || 'Sin descripción');
+            html += '</div></div>';
+          });
+          
+          html += '</div><button class="btn btn-secondary" onclick="buscarProducto()" style="margin-top:15px">Volver a resultados</button>';
+          document.getElementById('resultadosBusqueda').innerHTML = html;
+        })
+        .withFailureHandler(function(error) {
+          showMessage('resultadosBusqueda', '❌ Error: ' + error, 'error');
+        })
+        .buscarEnInventarioPorUbicacion(codigo);
+    }
+
+    function mostrarStock() {
+      document.getElementById("loading").style.display = "block";
+      google.script.run
+        .withSuccessHandler(stock => {
+          document.getElementById("loading").style.display = "none";
+          displayStockTable(stock, document.getElementById("stockTable"));
+        })
+        .withFailureHandler(error => {
+          document.getElementById("loading").style.display = "none";
+          showMessage('stockTable', 'Error: ' + error, 'error');
+        })
+        .obtenerStock();
+    }
+
+    function displayStockTable(stock, container) {
+      if (stock.length === 0) {
+        container.innerHTML = '<div class="message warning">No hay productos</div>';
+        return;
+      }
+
+      let html = '<table><thead><tr><th>Código</th><th>Nombre</th><th>Grupo</th><th>Stock Mín.</th><th>Stock</th><th>Precio</th><th>Valor</th><th>Estado</th></tr></thead><tbody>';
+      
+      stock.forEach(p => {
+        let cssClass = 'status-normal';
+        let estado = 'Normal';
+        
+        if (p.cantidad <= 0) {
+          cssClass = 'status-zero';
+          estado = 'Sin Stock';
+        } else if (p.cantidad <= p.stockMin && p.stockMin > 0) {
+          cssClass = 'status-low';
+          estado = 'Stock Bajo';
+        }
+        
+        const valorTotal = p.cantidad * p.precio;
+        html += `<tr class="${cssClass}">
+          <td>${p.codigo}</td>
+          <td>${p.nombre}</td>
+          <td>${p.grupo}</td>
+          <td>${p.stockMin}</td>
+          <td>${p.cantidad}</td>
+          <td>$${p.precio.toFixed(2)}</td>
+          <td>$${valorTotal.toFixed(2)}</td>
+          <td>${estado}</td>
+        </tr>`;
+      });
+      
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function mostrarAlertas() {
+      document.getElementById("loading").style.display = "block";
+      google.script.run
+        .withSuccessHandler(stock => {
+          document.getElementById("loading").style.display = "none";
+          const alertas = stock.filter(p => p.cantidad <= 0 || (p.cantidad <= p.stockMin && p.stockMin > 0));
+          if (alertas.length === 0) {
+            document.getElementById("stockTable").innerHTML = '<div class="message success">No hay alertas</div>';
+          } else {
+            displayStockTable(alertas, document.getElementById("stockTable"));
+          }
+        })
+        .withFailureHandler(error => {
+          document.getElementById("loading").style.display = "none";
+          showMessage('stockTable', 'Error: ' + error, 'error');
+        })
+        .obtenerStock();
+    }
+
+    function mostrarHistorial() {
+      const filtros = {
+        fechaDesde: document.getElementById("fechaDesde").value,
+        fechaHasta: document.getElementById("fechaHasta").value,
+        tipo: document.getElementById("filtroTipo").value
+      };
+
+      if (!filtros.fechaDesde || !filtros.fechaHasta) {
+        showMessage('historialTable', 'Seleccione fechas', 'warning');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(displayHistorialTable)
+        .withFailureHandler(error => showMessage('historialTable', 'Error: ' + error, 'error'))
+        .obtenerHistorial(filtros);
+    }
+
+    function displayHistorialTable(movimientos) {
+      const container = document.getElementById('historialTable');
+      
+      if (movimientos.length === 0) {
+        container.innerHTML = '<div class="message warning">No hay movimientos</div>';
+        return;
+      }
+
+      const tipoStyles = {
+        'INGRESO': ['text-success', 'Ingreso'],
+        'SALIDA': ['text-danger', 'Salida'],
+        'VENTA': ['text-info', 'Venta'],
+        'AJUSTE_POSITIVO': ['text-success', 'Ajuste +'],
+        'AJUSTE_NEGATIVO': ['text-danger', 'Ajuste -'],
+        'AJUSTE': ['text-warning', 'Ajuste']
+      };
+
+      let html = `<div class="message success">${movimientos.length} movimientos</div>`;
+      html += '<table><thead><tr><th>Fecha</th><th>Código</th><th>Producto</th><th>Tipo</th><th>Cantidad</th><th>Ubicación</th><th>Observaciones</th></tr></thead><tbody>';
+      
+      movimientos.forEach(m => {
+        const [cssClass, tipoTexto] = tipoStyles[m.tipo] || ['text-info', m.tipo];
+        html += `<tr>
+          <td>${m.fecha}</td>
+          <td>${m.codigo}</td>
+          <td>${m.producto}</td>
+          <td class="${cssClass}">${tipoTexto}</td>
+          <td>${m.cantidad}</td>
+          <td>${m.ubicacion || '-'}</td>
+          <td>${m.observaciones}</td>
+        </tr>`;
+      });
+      
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function validarIntegridad() {
+      google.script.run
+        .withSuccessHandler(resultado => {
+          let html = '<h4>Validación de Integridad</h4>';
+          if (resultado.errores.length === 0) {
+            html += '<div class="message success">✅ Sistema íntegro</div>';
+          } else {
+            html += '<div class="message error"><strong>⚠️ Errores encontrados:</strong></div><ul>';
+            resultado.errores.forEach(err => {
+              html += `<li class="text-danger">${err}</li>`;
+            });
+            html += '</ul>';
+          }
+          document.getElementById("configResults").innerHTML = html;
+        })
+        .withFailureHandler(error => showMessage('configResults', 'Error: ' + error, 'error'))
+        .validarIntegridad();
+    }
+
+    function inicializarSistema() {
+      if (!confirm('¿Desea inicializar el sistema? Esto creará/reinicializará todas las hojas necesarias en Google Sheets.\n\n⚠️ IMPORTANTE: Si ya tiene datos en la hoja Inventario, estos se mantendrán solo si la estructura es correcta.')) {
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(msg => {
+          showMessage('configResults', msg, msg.includes('correctamente') || msg.includes('✅') ? 'success' : 'error');
+          if (msg.includes('correctamente')) {
+            loadListas();
+            loadUbicaciones();
+            loadDashboard();
+          }
+        })
+        .withFailureHandler(error => showMessage('configResults', 'Error: ' + error, 'error'))
+        .inicializarHojas();
+    }
+
+    function exportarStock() {
+      google.script.run
+        .withSuccessHandler(url => {
+          if (url) {
+            window.open(url, '_blank');
+            showMessage('stockTable', '✅ Exportado', 'success');
+          } else {
+            showMessage('stockTable', '❌ Error al exportar', 'error');
+          }
+        })
+        .withFailureHandler(error => showMessage('stockTable', 'Error: ' + error, 'error'))
+        .exportarStockCSV();
+    }
+
+    function exportarReporte() {
+      const filtros = {
+        fechaDesde: document.getElementById("fechaDesde").value,
+        fechaHasta: document.getElementById("fechaHasta").value,
+        tipo: document.getElementById("filtroTipo").value
+      };
+
+      if (!filtros.fechaDesde || !filtros.fechaHasta) {
+        showMessage('historialTable', 'Seleccione fechas', 'warning');
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(movimientos => {
+          if (movimientos.length === 0) {
+            showMessage('historialTable', 'No hay datos', 'warning');
+            return;
+          }
+
+          let csv = '\ufeff' + 'Fecha,Código,Producto,Tipo,Cantidad,Ubicación,Observaciones,Usuario\n';
+          movimientos.forEach(m => {
+            csv += `"${m.fecha}","${m.codigo}","${m.producto}","${m.tipo}","${m.cantidad}","${m.ubicacion || ''}","${m.observaciones}","${m.usuario}"\n`;
+          });
+
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Reporte_${filtros.fechaDesde}_${filtros.fechaHasta}.csv`;
+          document.body.appendChild(link);
+          link.click();
+          window.URL.revokeObjectURL(url);
+          showMessage('historialTable', '✅ Exportado', 'success');
+        })
+        .obtenerHistorial(filtros);
+    }
+
+    function limpiarFormEntrada() {
+      document.getElementById('formEntrada').reset();
+      document.getElementById('msgEntrada').innerHTML = '';
+      document.getElementById("autocompleteEntrada").style.display = "none";
+      document.getElementById("stockMinEntrada").value = "0";
+      document.getElementById("costoEntrada").value = "0";
+    }
+
+    function limpiarFormMovimiento() {
+      document.getElementById('formMovimiento').reset();
+      document.getElementById("fechaMov").valueAsDate = new Date();
+      document.getElementById('msgMov').innerHTML = '';
+      document.getElementById("autocompleteDropdown").style.display = "none";
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById("buscarTexto").value = "";
+      document.getElementById("resultadosBusqueda").innerHTML = "";
+    }
+
+    function limpiarTodosFormularios() {
+      limpiarFormEntrada();
+      limpiarFormMovimiento();
+      limpiarBusqueda();
+      document.getElementById('historialTable').innerHTML = '';
+      document.getElementById('configResults').innerHTML = '';
+      document.getElementById('alertsContainer').innerHTML = '';
+      showMessage('configResults', '✅ Formularios limpiados', 'success');
+    }
+
+    function showMessage(containerId, message, type) {
+      const container = document.getElementById(containerId);
+      const cssClass = `message ${type}`;
+      container.innerHTML = `<div class="${cssClass}">${message}</div>`;
+      if (type === 'success') {
+        setTimeout(() => container.innerHTML = '', 5000);
+      }
+    }
+
+    // ========== FUNCIONES DEL MODAL DE VENTAS ==========
+
+    function abrirModalVenta() {
+      contadorItemsVenta = 0;
+      itemsVentaData = [];
+      document.getElementById('itemsVentaList').innerHTML = '';
+      document.getElementById('formVenta').reset();
+      
+      cargarUbicacionesEnModal();
+      agregarItemVenta();
+      
+      const now = new Date();
+      const horaActual = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      document.getElementById('ventaHoraSalida').value = horaActual;
+      
+      document.getElementById('modalVenta').classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModalVenta() {
+      document.getElementById('modalVenta').classList.remove('active');
+      document.body.style.overflow = 'auto';
+      
+      const tipoMov = document.getElementById("tipoMov");
+      if (tipoMov && tipoMov.value === 'VENTA') {
+        tipoMov.value = 'SALIDA';
+      }
+    }
+
+    function cargarUbicacionesEnModal() {
+      google.script.run
+        .withSuccessHandler(function(ubicaciones) {
+          const select = document.getElementById('ventaLugarExtraccion');
+          select.innerHTML = '<option value="">Seleccione...</option>';
+          
+          if (ubicaciones && ubicaciones.length > 0) {
+            ubicaciones.forEach(function(ub) {
+              select.innerHTML += `<option value="${ub}">${ub}</option>`;
+            });
+          } else {
+            select.innerHTML += '<option value="Casa Luden">Casa Luden</option>';
+            select.innerHTML += '<option value="Casa Jean">Casa Jean</option>';
+            select.innerHTML += '<option value="Casa Dylan">Casa Dylan</option>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          const select = document.getElementById('ventaLugarExtraccion');
+          select.innerHTML = '<option value="">Seleccione...</option>';
+          select.innerHTML += '<option value="Casa Luden">Casa Luden</option>';
+          select.innerHTML += '<option value="Casa Jean">Casa Jean</option>';
+          select.innerHTML += '<option value="Casa Dylan">Casa Dylan</option>';
+        })
+        .obtenerUbicaciones();
+    }
+
+    function agregarItemVenta() {
+      contadorItemsVenta++;
+      const itemId = contadorItemsVenta;
+      
+      const html = `
+        <div class="item-venta-row" id="itemVenta${itemId}">
+          <div class="item-venta-row-header">
+            <span class="item-number">Producto #${itemId}</span>
+            ${itemId > 1 ? `<button type="button" class="btn-remove-item" onclick="eliminarItemVenta(${itemId})">🗑️ Eliminar</button>` : ''}
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required-field">Código del Producto</label>
+              <div class="autocomplete-venta-container">
+                <input type="text" 
+                       id="itemCodigo${itemId}" 
+                       class="item-codigo-input"
+                       placeholder="Código" 
+                       required 
+                       onkeyup="buscarProductoVenta(${itemId})"
+                       onblur="setTimeout(() => ocultarAutocompleteVenta(${itemId}), 200)">
+                <div id="autocompleteVenta${itemId}" class="autocomplete-venta-dropdown"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="required-field">Cantidad</label>
+              <input type="number" 
+                     id="itemCantidad${itemId}" 
+                     min="0.01" 
+                     step="0.01" 
+                     placeholder="Cantidad" 
+                     required>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('itemsVentaList').insertAdjacentHTML('beforeend', html);
+    }
+
+    function eliminarItemVenta(itemId) {
+      const item = document.getElementById(`itemVenta${itemId}`);
+      if (item) {
+        item.remove();
+        renumerarItemsVenta();
+      }
+    }
+
+    function renumerarItemsVenta() {
+      const items = document.querySelectorAll('.item-venta-row');
+      items.forEach((item, index) => {
+        const numero = index + 1;
+        const numberSpan = item.querySelector('.item-number');
+        if (numberSpan) {
+          numberSpan.textContent = `Producto #${numero}`;
+        }
+      });
+    }
+
+    function buscarProductoVenta(itemId) {
+      const input = document.getElementById(`itemCodigo${itemId}`);
+      const codigo = input.value.trim().toUpperCase();
+      
+      if (codigo.length === 0) {
+        ocultarAutocompleteVenta(itemId);
+        return;
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(productos) {
+          mostrarAutocompleteVenta(itemId, productos);
+        })
+        .buscarProductoPorCodigo(codigo);
+    }
+
+    function mostrarAutocompleteVenta(itemId, productos) {
+      const dropdown = document.getElementById(`autocompleteVenta${itemId}`);
+      
+      if (!productos || productos.length === 0) {
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      let html = '';
+      productos.forEach(function(prod) {
+        html += `
+          <div class="autocomplete-venta-item" onmousedown="seleccionarProductoVenta(${itemId}, '${prod.codigo}', '${prod.nombre}')">
+            <strong>${prod.codigo}</strong>
+            <small>${prod.nombre} - ${prod.precio}</small>
+          </div>
+        `;
+      });
+      
+      dropdown.innerHTML = html;
+      dropdown.style.display = 'block';
+    }
+
+    function seleccionarProductoVenta(itemId, codigo, nombre) {
+      document.getElementById(`itemCodigo${itemId}`).value = codigo;
+      ocultarAutocompleteVenta(itemId);
+    }
+
+    function ocultarAutocompleteVenta(itemId) {
+      const dropdown = document.getElementById(`autocompleteVenta${itemId}`);
+      if (dropdown) {
+        dropdown.style.display = 'none';
+      }
+    }
+
+    function calcularTotalVenta() {
+      const monto = parseFloat(document.getElementById('ventaMontoCobrado').value) || 0;
+      const envio = parseFloat(document.getElementById('ventaEnvioCobrado').value) || 0;
+      const total = monto + envio;
+      
+      document.getElementById('totalVentaDisplay').textContent = total.toFixed(2);
+    }
+
+    function registrarVentaDetallada(event) {
+      event.preventDefault();
+      
+      const items = [];
+      const itemRows = document.querySelectorAll('.item-venta-row');
+      
+      if (itemRows.length === 0) {
+        showMessage('msgMov', '❌ Debe agregar al menos un producto', 'error');
+        return;
+      }
+      
+      let hayErrores = false;
+      itemRows.forEach(function(row) {
+        const id = row.id.replace('itemVenta', '');
+        const codigoInput = document.getElementById(`itemCodigo${id}`);
+        const cantidadInput = document.getElementById(`itemCantidad${id}`);
+        
+        if (!codigoInput || !cantidadInput) return;
+        
+        const codigo = codigoInput.value.trim().toUpperCase();
+        const cantidad = parseFloat(cantidadInput.value);
+        
+        if (!codigo || !cantidad || cantidad <= 0) {
+          hayErrores = true;
+          return;
+        }
+        
+        items.push({ codigo, cantidad });
+      });
+      
+      if (hayErrores) {
+        showMessage('msgMov', '❌ Complete todos los campos de productos correctamente', 'error');
+        return;
+      }
+      
+      const datosVenta = {
+        vendedor: document.getElementById('ventaVendedor').value.trim(),
+        entregador: document.getElementById('ventaEntregador').value.trim(),
+        items: items,
+        montoCobrado: parseFloat(document.getElementById('ventaMontoCobrado').value) || 0,
+        envioCobrado: parseFloat(document.getElementById('ventaEnvioCobrado').value) || 0,
+        lugarExtraccion: document.getElementById('ventaLugarExtraccion').value,
+        lugarEntrega: document.getElementById('ventaLugarEntrega').value.trim(),
+        horaSalida: document.getElementById('ventaHoraSalida').value,
+        horaFinalizacion: document.getElementById('ventaHoraFinalizacion').value,
+        observaciones: document.getElementById('ventaObservaciones').value.trim()
+      };
+      
+      if (!datosVenta.vendedor || !datosVenta.montoCobrado || !datosVenta.lugarExtraccion || !datosVenta.lugarEntrega || !datosVenta.horaSalida) {
+        showMessage('msgMov', '❌ Complete todos los campos obligatorios', 'error');
+        return;
+      }
+      
+      const submitBtn = event.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '⏳ Registrando...';
+      submitBtn.disabled = true;
+      
+      google.script.run
+        .withSuccessHandler(function(resultado) {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          
+          if (resultado.success) {
+            showMessage('msgMov', resultado.message, 'success');
+            cerrarModalVenta();
+            
+            if (currentTab === 'dashboard') {
+              loadDashboard();
+            }
+            
+            limpiarFormMovimiento();
+          } else {
+            showMessage('msgMov', resultado.message, 'error');
+          }
+        })
+        .withFailureHandler(function(error) {
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          showMessage('msgMov', '❌ Error: ' + error, 'error');
+        })
+        .registrarVentaDetallada(datosVenta);
+    }
+
+    // Event Listeners
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('modalVenta');
+        if (modal && modal.classList.contains('active')) {
+          cerrarModalVenta();
+        }
+      }
+      
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        const forms = {
+          'entrada': 'formEntrada',
+          'movimientos': 'formMovimiento'
+        };
+        if (forms[currentTab]) {
+          document.getElementById(forms[currentTab]).dispatchEvent(new Event('submit'));
+        }
+      }
+      
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        if (currentTab === 'dashboard') loadDashboard();
+        if (currentTab === 'inventario') mostrarStock();
+      }
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.autocomplete-container')) {
+        document.getElementById("autocompleteDropdown").style.display = "none";
+        document.getElementById("autocompleteEntrada").style.display = "none";
+      }
+    });
+
+    document.getElementById('modalVenta').addEventListener('click', function(e) {
+      if (e.target === this) {
+        cerrarModalVenta();
+      }
+    });
+    function setVh() {
+    document.documentElement.style.setProperty('--vh', (window.innerHeight*0.01)+'px');
+  }
+  window.addEventListener('resize', setVh);
+  window.addEventListener('orientationchange', setVh);
+  setVh();
+    console.log('✅ Sistema de inventario cargado correctamente');
+
+
+
+
+
+
+
+    (function fitToContent() {
+  function syncBodyHeight() {
+    // medimos el contenido más alto visible
+    const main = document.querySelector('.main-content');
+    const h = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+      main ? main.scrollHeight : 0
+    );
+    document.body.style.minHeight = h + 'px';
+  }
+  // correr ahora y en cambios de tamaño/orientación/contenido
+  const ro = new ResizeObserver(syncBodyHeight);
+  ro.observe(document.documentElement);
+  if (document.querySelector('.main-content')) ro.observe(document.querySelector('.main-content'));
+  window.addEventListener('resize', syncBodyHeight);
+  window.addEventListener('orientationchange', syncBodyHeight);
+  document.addEventListener('DOMContentLoaded', syncBodyHeight);
+  setTimeout(syncBodyHeight, 0);
+})();
+
+// ========== DASHBOARD ANALÍTICO ==========
+
+function loadAnalyticsDashboard() {
+  const container = document.getElementById('analyticsContainer');
+  container.innerHTML = '<div class="loading" style="display:block;">📊 Cargando datos analíticos...</div>';
+  
+  google.script.run
+    .withSuccessHandler(renderAnalytics)
+    .withFailureHandler(function(error) {
+      container.innerHTML = '<div class="message error">❌ Error al cargar dashboard: ' + error + '</div>';
+    })
+    .obtenerDatosAnalíticos();
+}
+
+function renderAnalytics(data) {
+  const container = document.getElementById('analyticsContainer');
+  
+  let html = '';
+  
+  // Header con botones
+  html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">';
+  html += '<div>';
+  html += '<p style="color: #6c757d; font-size: 0.9rem;">Última actualización: ' + new Date().toLocaleString('es-ES') + '</p>';
+  html += '</div>';
+  html += '<div style="display: flex; gap: 10px;">';
+  html += '<button class="btn btn-primary" onclick="loadAnalyticsDashboard()">🔄 Actualizar</button>';
+  html += '</div>';
+  html += '</div>';
+
+  // KPIs Principales
+  html += '<div class="stats-grid" style="margin-bottom: 30px;">';
+  html += '<div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">';
+  html += '<div class="stat-value">$' + data.kpis.ventasTotales.toLocaleString() + '</div>';
+  html += '<div class="stat-label">💰 Ventas Totales</div>';
+  html += '</div>';
+  
+  html += '<div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">';
+  html += '<div class="stat-value">$' + data.kpis.ventasMes.toLocaleString() + '</div>';
+  html += '<div class="stat-label">📈 Ventas del Mes</div>';
+  html += '</div>';
+  
+  html += '<div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">';
+  html += '<div class="stat-value">' + data.kpis.productosUnicos + '</div>';
+  html += '<div class="stat-label">📦 Productos Únicos</div>';
+  html += '</div>';
+  
+  html += '<div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">';
+  html += '<div class="stat-value">' + data.kpis.stockTotal.toLocaleString() + '</div>';
+  html += '<div class="stat-label">📊 Stock Total</div>';
+  html += '</div>';
+  html += '</div>';
+
+  // KPIs de Rendimiento
+  html += '<div class="card" style="margin-bottom: 25px;">';
+  html += '<div class="card-header">🎯 KPIs de Rendimiento</div>';
+  html += '<div class="card-body">';
+  html += '<div class="stats-grid">';
+  html += renderKPICard('Rotación Inventario', data.kpis.rotacionInventario, 'x', 6);
+  html += renderKPICard('Margen Ganancia', data.kpis.margenPromedio, '%', 40);
+  html += renderKPICard('Ticket Promedio', data.kpis.ticketPromedio, '$', 300);
+  html += renderKPICard('Disponibilidad', data.kpis.disponibilidad, '%', 95);
+  html += '</div>';
+  html += '</div>';
+  html += '</div>';
+
+  // Gráficos
+  html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 25px;">';
+  
+  html += '<div class="card">';
+  html += '<div class="card-header">📈 Ventas vs Costos (Últimos 6 Meses)</div>';
+  html += '<div class="card-body">';
+  html += '<canvas id="chartVentasMensuales" height="250"></canvas>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="card">';
+  html += '<div class="card-header">📍 Distribución de Stock</div>';
+  html += '<div class="card-body">';
+  html += '<canvas id="chartStockUbicacion" height="250"></canvas>';
+  html += '</div>';
+  html += '</div>';
+  
+  html += '</div>';
+
+  // Top Productos
+  html += '<div class="card" style="margin-bottom: 25px;">';
+  html += '<div class="card-header">🏆 Top 5 Productos Más Vendidos</div>';
+  html += '<div class="card-body">';
+  html += '<canvas id="chartTopProductos" height="200"></canvas>';
+  html += '</div>';
+  html += '</div>';
+
+  // Mejores Vendedores y Lugares
+  html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; margin-bottom: 25px;">';
+  
+  html += '<div class="card">';
+  html += '<div class="card-header">👤 Mejores Vendedores</div>';
+  html += '<div class="card-body">';
+  html += renderMejoresVendedores(data.mejoresVendedores);
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div class="card">';
+  html += '<div class="card-header">🗺️ Lugares con Más Entregas</div>';
+  html += '<div class="card-body">';
+  html += renderTopLugares(data.topLugares);
+  html += '</div>';
+  html += '</div>';
+  
+  html += '</div>';
+
+  // Alertas de Stock
+  if (data.alertasStock.length > 0) {
+    html += '<div class="card" style="margin-bottom: 25px;">';
+    html += '<div class="card-header" style="background: #f8d7da; color: #721c24; border-color: #f5c6cb;">';
+    html += '⚠️ Alertas de Stock Crítico (' + data.alertasStock.length + ')';
+    html += '</div>';
+    html += '<div class="card-body">';
+    html += renderAlertasStock(data.alertasStock);
+    html += '</div>';
+    html += '</div>';
+  }
+
+  // Recomendaciones
+  html += '<div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">';
+  html += '<div class="card-header" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">';
+  html += '💡 Recomendaciones Inteligentes';
+  html += '</div>';
+  html += '<div class="card-body">';
+  html += renderRecomendaciones(data.recomendaciones);
+  html += '</div>';
+  html += '</div>';
+  
+  container.innerHTML = html;
+  
+  setTimeout(function() {
+    renderCharts(data);
+  }, 100);
+}
+
+function renderKPICard(title, value, unit, target) {
+  const percentage = target ? (value / target) * 100 : value;
+  const color = percentage >= 100 ? '#28a745' : percentage >= 75 ? '#ffc107' : '#dc3545';
+  
+  let html = '';
+  html += '<div style="background: white; padding: 20px; border-radius: 10px; border: 2px solid #e9ecef;">';
+  html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">';
+  html += '<h4 style="margin: 0; font-size: 0.9rem; color: #6c757d;">' + title + '</h4>';
+  html += '<span style="font-size: 1.5rem; font-weight: bold; color: #2E86AB;">' + value + unit + '</span>';
+  html += '</div>';
+  html += '<div style="background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;">';
+  html += '<div style="background: ' + color + '; height: 100%; width: ' + Math.min(percentage, 100) + '%; transition: width 0.5s;"></div>';
+  html += '</div>';
+  
+  if (target) {
+    html += '<p style="margin: 5px 0 0 0; font-size: 0.8rem; color: #6c757d;">Meta: ' + target + unit + '</p>';
+  }
+  
+  html += '</div>';
+  return html;
+}
+
+function renderMejoresVendedores(vendedores) {
+  if (!vendedores || vendedores.length === 0) {
+    return '<p style="text-align: center; color: #6c757d;">No hay datos de vendedores</p>';
+  }
+  
+  const colores = ['#ffd700', '#c0c0c0', '#cd7f32'];
+  let html = '';
+  
+  vendedores.forEach(function(v, idx) {
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px; background: linear-gradient(135deg, ' + colores[idx] + '20 0%, ' + colores[idx] + '10 100%); border-left: 4px solid ' + colores[idx] + '; border-radius: 8px;">';
+    html += '<div style="display: flex; align-items: center; gap: 15px;">';
+    html += '<div style="width: 40px; height: 40px; border-radius: 50%; background: ' + colores[idx] + '; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; font-size: 1.2rem;">';
+    html += (idx + 1);
+    html += '</div>';
+    html += '<div>';
+    html += '<p style="margin: 0; font-weight: 600; color: #2E86AB;">' + v.nombre + '</p>';
+    html += '<p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #6c757d;">' + v.ventas + ' ventas realizadas</p>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div style="text-align: right;">';
+    html += '<p style="margin: 0; font-size: 1.3rem; font-weight: bold; color: #28a745;">$' + v.monto.toLocaleString() + '</p>';
+    html += '</div>';
+    html += '</div>';
+  });
+  
+  return html;
+}
+
+function renderTopLugares(lugares) {
+  if (!lugares || lugares.length === 0) {
+    return '<p style="text-align: center; color: #6c757d;">No hay datos de lugares</p>';
+  }
+  
+  const maxEntregas = lugares[0].entregas;
+  let html = '';
+  
+  lugares.forEach(function(l) {
+    const porcentaje = (l.entregas / maxEntregas) * 100;
+    html += '<div style="padding: 15px; margin-bottom: 12px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #5DADE2;">';
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">';
+    html += '<p style="margin: 0; font-weight: 600; color: #2E86AB;">📍 ' + l.lugar + '</p>';
+    html += '<span style="background: #5DADE2; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: bold;">';
+    html += l.entregas + ' entregas';
+    html += '</span>';
+    html += '</div>';
+    html += '<div style="display: flex; align-items: center; gap: 10px;">';
+    html += '<div style="flex: 1; background: #dee2e6; height: 10px; border-radius: 5px; overflow: hidden;">';
+    html += '<div style="background: linear-gradient(90deg, #5DADE2, #2E86AB); height: 100%; width: ' + porcentaje + '%; transition: width 0.5s;"></div>';
+    html += '</div>';
+    html += '<span style="font-weight: bold; color: #28a745; font-size: 0.9rem;">$' + l.monto.toLocaleString() + '</span>';
+    html += '</div>';
+    html += '</div>';
+  });
+  
+  return html;
+}
+
+function renderAlertasStock(alertas) {
+  if (!alertas || alertas.length === 0) {
+    return '<p style="text-align: center; color: #28a745;">✅ No hay alertas de stock</p>';
+  }
+  
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
+  
+  alertas.forEach(function(a) {
+    html += '<div style="padding: 15px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 8px;">';
+    html += '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">';
+    html += '<div>';
+    html += '<p style="margin: 0; font-weight: 600; color: #721c24;">' + a.nombre + '</p>';
+    html += '<p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #721c24; opacity: 0.8;">' + a.codigo + '</p>';
+    html += '</div>';
+    html += '<span style="background: #dc3545; color: white; padding: 4px 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem;">';
+    html += a.stock + ' unidades';
+    html += '</span>';
+    html += '</div>';
+    html += '<p style="margin: 10px 0 0 0; font-size: 0.85rem; color: #721c24;">';
+    html += '⚠️ Mínimo requerido: <strong>' + a.minimo + '</strong> unidades';
+    html += '</p>';
+    html += '</div>';
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+function renderRecomendaciones(recomendaciones) {
+  if (!recomendaciones || recomendaciones.length === 0) {
+    return '<p style="text-align: center; opacity: 0.8;">No hay recomendaciones disponibles</p>';
+  }
+  
+  const iconos = {
+    'critico': '🚨',
+    'advertencia': '⚠️',
+    'exito': '✅',
+    'info': 'ℹ️'
+  };
+  
+  let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">';
+  
+  recomendaciones.forEach(function(r) {
+    const icono = iconos[r.tipo] || '📌';
+    html += '<div style="padding: 15px; background: rgba(255,255,255,0.15); border-radius: 8px; backdrop-filter: blur(10px);">';
+    html += '<p style="margin: 0; font-size: 0.95rem; line-height: 1.5;">';
+    html += '<span style="font-size: 1.3rem; margin-right: 8px;">' + icono + '</span>';
+    html += r.texto;
+    html += '</p>';
+    html += '</div>';
+  });
+  
+  html += '</div>';
+  return html;
+}
+
+function renderCharts(data) {
+  if (typeof Chart === 'undefined') {
+    console.warn('Chart.js no está disponible');
+    return;
+  }
+  
+  const chartIds = ['chartVentasMensuales', 'chartStockUbicacion', 'chartTopProductos'];
+  chartIds.forEach(function(id) {
+    const canvas = document.getElementById(id);
+    if (canvas && canvas.chart) {
+      canvas.chart.destroy();
+    }
+  });
+  
+  // Gráfico de Ventas Mensuales
+  const ctxVentas = document.getElementById('chartVentasMensuales');
+  if (ctxVentas && data.ventasMensuales.length > 0) {
+    ctxVentas.chart = new Chart(ctxVentas, {
+      type: 'line',
+      data: {
+        labels: data.ventasMensuales.map(function(v) { return v.mes; }),
+        datasets: [
+          {
+            label: 'Ventas',
+            data: data.ventasMensuales.map(function(v) { return v.ventas; }),
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          },
+          {
+            label: 'Costos',
+            data: data.ventasMensuales.map(function(v) { return v.costos; }),
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 3,
+            tension: 0.4,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return '$' + value.toLocaleString();
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+  // Gráfico de Stock por Ubicación
+  const ctxStock = document.getElementById('chartStockUbicacion');
+  if (ctxStock && data.stockPorUbicacion.length > 0) {
+    ctxStock.chart = new Chart(ctxStock, {
+      type: 'doughnut',
+      data: {
+        labels: data.stockPorUbicacion.map(function(s) { return s.nombre; }),
+        datasets: [{
+          data: data.stockPorUbicacion.map(function(s) { return s.cantidad; }),
+          backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'],
+          borderWidth: 2,
+          borderColor: '#fff'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom' }
+        }
+      }
+    });
+  }
+  
+  // Gráfico de Top Productos
+  const ctxProductos = document.getElementById('chartTopProductos');
+  if (ctxProductos && data.topProductos.length > 0) {
+    ctxProductos.chart = new Chart(ctxProductos, {
+      type: 'bar',
+      data: {
+        labels: data.topProductos.map(function(p) { return p.nombre; }),
+        datasets: [
+          {
+            label: 'Cantidad Vendida',
+            data: data.topProductos.map(function(p) { return p.cantidad; }),
+            backgroundColor: 'rgba(139, 92, 246, 0.8)',
+            borderColor: '#8b5cf6',
+            borderWidth: 2,
+            yAxisID: 'y'
+          },
+          {
+            label: 'Ingresos ($)',
+            data: data.topProductos.map(function(p) { return p.ingresos; }),
+            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+            borderColor: '#3b82f6',
+            borderWidth: 2,
+            yAxisID: 'y1'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top' }
+        },
+        scales: {
+          y: {
+            type: 'linear',
+            display: true,
+            position: 'left',
+            title: { display: true, text: 'Cantidad' }
+          },
+          y1: {
+            type: 'linear',
+            display: true,
+            position: 'right',
+            title: { display: true, text: 'Ingresos ($)' },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+
+</html>
