@@ -1,0 +1,106 @@
+ <!-- MODAL DE VENTAS -->
+  <div id="modalVenta" class="modal-overlay">
+    <div class="modal-venta">
+      <div class="modal-venta-header">
+        <h2>🛒 Registro de Venta</h2>
+        <button class="close-modal" onclick="cerrarModalVenta()">&times;</button>
+      </div>
+
+      <form id="formVenta" onsubmit="registrarVentaDetallada(event)">
+        <div class="modal-venta-body">
+
+          <!-- SECCIÓN: INFORMACIÓN DEL VENDEDOR -->
+          <div class="modal-section">
+            <div class="modal-section-title">👤 Información del Vendedor</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Nombre del Vendedor</label>
+                <input type="text" id="ventaVendedor" placeholder="ej: Dylan Rizo" required>
+              </div>
+              <div class="form-group">
+                <label>Persona que realizó la entrega</label>
+                <input type="text" id="ventaEntregador" placeholder="ej: Jean">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: PRODUCTOS VENDIDOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">📦 Productos Vendidos</div>
+            <div class="items-venta-list" id="itemsVentaList">
+              <!-- Los items se generarán dinámicamente -->
+            </div>
+            <button type="button" class="btn-add-item" onclick="agregarItemVenta()">
+              ➕ Agregar Producto
+            </button>
+          </div>
+
+          <!-- SECCIÓN: MONTOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">💰 Información de Pago</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Monto Cobrado</label>
+                <input type="number" id="ventaMontoCobrado" min="0" step="0.01" placeholder="0.00" required onchange="calcularTotalVenta()">
+              </div>
+              <div class="form-group">
+                <label>Envío Cobrado</label>
+                <input type="number" id="ventaEnvioCobrado" min="0" step="0.01" placeholder="0.00" value="0" onchange="calcularTotalVenta()">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: UBICACIONES -->
+          <div class="modal-section">
+            <div class="modal-section-title">📍 Ubicaciones</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Lugar de Extracción del Inventario</label>
+                <select id="ventaLugarExtraccion" required>
+                  <option value="">Seleccione...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="required-field">Lugar donde se hizo la entrega</label>
+                <input type="text" id="ventaLugarEntrega" placeholder="ej: Casa del cliente, Oficina, etc." required>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: HORARIOS -->
+          <div class="modal-section">
+            <div class="modal-section-title">🕐 Horarios de Entrega</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required-field">Hora de Salida</label>
+                <input type="time" id="ventaHoraSalida" required>
+              </div>
+              <div class="form-group">
+                <label>Hora de Finalización</label>
+                <input type="time" id="ventaHoraFinalizacion">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECCIÓN: OBSERVACIONES -->
+          <div class="modal-section">
+            <div class="form-group">
+              <label>Observaciones Adicionales</label>
+              <textarea id="ventaObservaciones" rows="3" placeholder="Notas adicionales sobre la venta..."></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-venta-footer">
+          <div class="total-venta-display">
+            Total: $<span id="totalVentaDisplay">0.00</span>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalVenta()">Cancelar</button>
+            <button type="submit" class="btn btn-success">💾 Registrar Venta</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

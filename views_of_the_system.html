@@ -1,0 +1,302 @@
+    <div class="main-content">
+      <!-- DASHBOARD -->
+      <div id="dashboard" class="tab-content active">
+        <div class="content-header">
+          <h2>Dashboard General</h2>
+        </div>
+        <div class="content-body">
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="card">
+            <div class="card-header">Alertas de Stock</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-primary" onclick="loadDashboard()">Actualizar</button>
+                <button class="btn btn-warning" onclick="showStockAlerts()">Ver Alertas</button>
+              </div>
+              <div id="alertsContainer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTRADA DE PRODUCTOS -->
+      <div id="entrada" class="tab-content">
+        <div class="content-header">
+          <h2>Entrada de Productos</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Registrar Entrada de Producto</div>
+            <div class="card-body">
+              <form id="formEntrada" onsubmit="registrarEntrada(event)">
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="codigoEntrada">Código del Producto *</label>
+                    <div class="autocomplete-container">
+                      <input id="codigoEntrada" type="text" placeholder="Código" required onkeyup="buscarProductoEntrada()" onblur="ocultarAutocompletadoEntrada()">
+                      <div id="autocompleteEntrada" class="autocomplete-dropdown"></div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label for="nombreEntrada">Nombre *</label>
+                    <input id="nombreEntrada" type="text" placeholder="Nombre del producto" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="unidadEntrada">Unidad de Medida *</label>
+                    <select id="unidadEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="grupoEntrada">Grupo *</label>
+                    <select id="grupoEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="cantidadEntrada">Cantidad *</label>
+                    <input id="cantidadEntrada" type="number" min="0.01" step="0.01" placeholder="Cantidad" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="costoEntrada">Costo Unitario</label>
+                    <input id="costoEntrada" type="number" min="0" step="0.01" placeholder="Costo" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="precioEntrada">Precio de Venta *</label>
+                    <input id="precioEntrada" type="number" min="0.01" step="0.01" placeholder="Precio" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="stockMinEntrada">Stock Mínimo</label>
+                    <input id="stockMinEntrada" type="number" min="0" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label for="almacenEntrada">Ubicación/Casa *</label>
+                    <select id="almacenEntrada" required></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="descripcionEntrada">Descripción</label>
+                    <textarea id="descripcionEntrada" placeholder="Descripción del producto" rows="2"></textarea>
+                  </div>
+                </div>
+                <div class="actions">
+                  <button type="submit" class="btn btn-success">Registrar Entrada</button>
+                  <button type="button" class="btn btn-secondary" onclick="limpiarFormEntrada()">Limpiar</button>
+                </div>
+              </form>
+              <div id="msgEntrada"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MOVIMIENTOS -->
+<div id="movimientos" class="tab-content">
+  <div class="content-header">
+    <h2>Registro de Movimientos</h2>
+  </div>
+  <div class="content-body">
+    
+    <!-- ✅ AGREGAR AQUÍ: Botones de acciones rápidas -->
+    <div class="btn-group" style="margin-bottom: 20px; display: flex; gap: 10px;">
+      <button type="button" class="btn btn-primary" onclick="abrirModalTransferencia()">
+        🔄 Transferir Stock entre Ubicaciones
+      </button>
+      <button type="button" class="btn btn-success" onclick="abrirModalVenta()">
+        🛒 Registrar Venta
+      </button>
+    </div>
+    <!-- FIN: Botones de acciones rápidas -->
+
+    <div class="card">
+      <div class="card-header">Nuevo Movimiento</div>
+      <div class="card-body">
+        <form id="formMovimiento" onsubmit="registrarMovimiento(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="codigoMov">Código *</label>
+              <div class="autocomplete-container">
+                <input id="codigoMov" type="text" placeholder="Código" required onkeyup="buscarProductoAutocompletado()" onblur="ocultarAutocompletado()">
+                <div id="autocompleteDropdown" class="autocomplete-dropdown"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="fechaMov">Fecha *</label>
+              <input id="fechaMov" type="date" required>
+            </div>
+            <div class="form-group">
+              <label for="tipoMov">Tipo *</label>
+              <select id="tipoMov" required onchange="handleTipoChange()">
+                <option value="SALIDA">Salida</option>
+                <option value="VENTA">Venta</option>
+                <option value="TRANSFERENCIA">Transferencia entre ubicaciones</option>
+                <option value="AJUSTE_POSITIVO">Ajuste +</option>
+                <option value="AJUSTE_NEGATIVO">Ajuste -</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cantMov">Cantidad *</label>
+              <input id="cantMov" type="number" min="0.01" step="0.01" placeholder="Cantidad" required>
+            </div>
+            <div class="form-group">
+              <label for="obsMov">Observaciones</label>
+              <textarea id="obsMov" placeholder="Observaciones" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <button type="button" class="btn btn-secondary" onclick="limpiarFormMovimiento()">Limpiar</button>
+          </div>
+        </form>
+        <div id="msgMov"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- INVENTARIO -->
+      <div id="inventario" class="tab-content">
+        <div class="content-header">
+          <h2>Inventario</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Stock Actual</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarStock()">Actualizar</button>
+                <button class="btn btn-success" onclick="exportarStock()">Exportar CSV</button>
+                <button class="btn btn-warning" onclick="mostrarAlertas()">Solo Alertas</button>
+              </div>
+              <div id="loading" class="loading">Cargando...</div>
+              <div class="table-container">
+                <div id="stockTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BUSCAR PRODUCTO -->
+      <div id="buscar" class="tab-content">
+        <div class="content-header">
+          <h2>Buscar Producto</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Buscar por Código o Nombre</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="buscarTexto">Código o Nombre</label>
+                  <input id="buscarTexto" type="text" placeholder="Buscar..." onkeyup="buscarEnTiempoReal()">
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="buscarProducto()">Buscar</button>
+                <button class="btn btn-secondary" onclick="limpiarBusqueda()">Limpiar</button>
+              </div>
+              <div id="resultadosBusqueda"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTES -->
+       <div id="reportes" class="tab-content">
+        <div class="content-header">
+          <h2>📊 Reportes Avanzados</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">🔍 Filtros de Búsqueda</div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="fechaDesde">📅 Desde</label>
+                  <input id="fechaDesde" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="fechaHasta">📅 Hasta</label>
+                  <input id="fechaHasta" type="date" required>
+                </div>
+                <div class="form-group">
+                  <label for="filtroTipo">🔄 Tipo de Movimiento</label>
+                  <select id="filtroTipo" onchange="manejarCambioTipoReporte()">
+                    <option value="">Todos los movimientos</option>
+                    <option value="INGRESO">📥 Ingresos</option>
+                    <option value="SALIDA">📤 Salidas</option>
+                    <option value="VENTA">💰 Ventas</option>
+                    <option value="AJUSTE_POSITIVO">➕ Ajustes Positivos</option>
+                    <option value="AJUSTE_NEGATIVO">➖ Ajustes Negativos</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="filtroUbicacion">📍 Ubicación</label>
+                  <select id="filtroUbicacion">
+                    <option value="">Todas las ubicaciones</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="filtroProducto">📦 Producto</label>
+                  <select id="filtroProducto">
+                    <option value="">Todos los productos</option>
+                  </select>
+                </div>
+                <div class="form-group" id="filtroVendedorGroup" style="display: none;">
+                  <label for="filtroVendedor">👤 Vendedor</label>
+                  <select id="filtroVendedor">
+                    <option value="">Todos los vendedores</option>
+                  </select>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn btn-primary" onclick="mostrarHistorial()">🔍 Generar Reporte</button>
+                <button class="btn btn-success" onclick="exportarReporte()">📥 Exportar CSV</button>
+                <button class="btn btn-secondary" onclick="limpiarFiltrosReporte()">🔄 Limpiar Filtros</button>
+              </div>
+              <div id="resumenReporte" style="margin-top: 15px;"></div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">📋 Resultados</div>
+            <div class="card-body">
+              <div class="table-container">
+                <div id="historialTable"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIGURACIÓN -->
+      <div id="configuracion" class="tab-content">
+        <div class="content-header">
+          <h2>Configuración</h2>
+        </div>
+        <div class="content-body">
+          <div class="card">
+            <div class="card-header">Herramientas del Sistema</div>
+            <div class="card-body">
+              <div class="actions">
+                <button class="btn btn-info" onclick="validarIntegridad()">Validar Integridad</button>
+                <button class="btn btn-success" onclick="inicializarSistema()">Inicializar Sistema</button>
+                <button class="btn btn-warning" onclick="limpiarTodosFormularios()">Limpiar Formularios</button>
+              </div>
+              <div id="configResults"></div>
+            </div>
+          </div>
+        </div>
+       
+
+      </div>
+       <!-- DASHBOARD ANALÍTICO -->
+        <div id="analytics" class="tab-content">
+          <div class="content-header">
+            <h2>📊 Dashboard Analítico</h2>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div id="analyticsContainer"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
