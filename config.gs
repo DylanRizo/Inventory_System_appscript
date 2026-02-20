@@ -7,6 +7,9 @@ const HOJA_INVENTARIO = "Inventario";
 const HOJA_ENTRADA = "Entrada de Productos";
 const HOJA_VENTAS = "Ventas";
 
+// Índice de columna para Canal de Venta en la hoja Ventas (columna O)
+const COL_CANAL_VENTA = 15;
+
 const TIPOS_MOVIMIENTO = {
   INGRESO: "INGRESO",
   SALIDA: "SALIDA",
@@ -22,5 +25,6 @@ const CAMPOS_VENTA = {
   LUGAR_ENTREGA: "lugarEntrega",
   ENVIO_COBRADO: "envioCobrado",
   HORA_SALIDA: "horaSalida",
-  HORA_FINALIZACION: "horaFinalizacion"
+  HORA_FINALIZACION: "horaFinalizacion",
+  CANAL_VENTA: "canalVenta"
 };

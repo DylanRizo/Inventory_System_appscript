@@ -1,1002 +1,1268 @@
- <style>
-/* ============================================
+<style>
+  /* ============================================
    REFINAMIENTO ESTÉTICO MOBILE-FIRST
    ============================================ */
 
-html {
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-}
-
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  touch-action: manipulation;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #E8F4F8;
-  height: auto !important;
-  min-height: 100dvh;
-  margin: 0;
-  padding: 0;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* ========== CONTENEDORES PRINCIPALES ========== */
-.app-container {
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-  display: flex;
-  position: relative;
-  height: auto !important;
-  min-height: 100dvh;
-}
-
-/* ========== MENÚ HAMBURGUESA ========== */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  z-index: 10000;
-  background: #2E86AB;
-  color: white;
-  border: none;
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-}
-
-.menu-toggle:active {
-  transform: scale(0.95);
-}
-
-/* ========== SIDEBAR ========== */
-.sidebar {
-  width: 250px;
-  background: #2E86AB;
-  color: white;
-  flex-shrink: 0;
-  overflow-y: auto;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.sidebar-header {
-  padding: 20px;
-  background: #1C5F7B;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-header h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-.nav-menu {
-  list-style: none;
-  padding: 20px 0;
-}
-
-.nav-item {
-  margin: 5px 15px;
-}
-
-.nav-link {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.nav-link:hover {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  transform: translateX(5px);
-}
-
-.nav-link.active {
-  background: #5DADE2;
-  color: white;
-  font-weight: 600;
-}
-
-.nav-icon {
-  margin-right: 10px;
-  font-size: 1.1rem;
-  width: 20px;
-  text-align: center;
-}
-
-/* ========== CONTENIDO PRINCIPAL ========== */
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  background: #FAFBFC;
-}
-
-.content-header {
-  background: white;
-  padding: 20px 30px;
-  border-bottom: 1px solid #e9ecef;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.content-header h2 {
-  color: #2E86AB;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.content-body {
-  padding: 30px;
-}
-
-/* ========== TABS Y ANIMACIONES ========== */
-.tab-content {
-  display: none;
-  animation: fadeIn 0.3s ease;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+  html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-/* ========== TARJETAS (CARDS) ========== */
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
-  margin-bottom: 25px;
-  overflow: hidden;
-  border: 1px solid #E5F2F7;
-}
-
-.card-header {
-  padding: 20px;
-  background: #F0F8FC;
-  border-bottom: 1px solid #E5F2F7;
-  font-weight: 600;
-  color: #2E86AB;
-}
-
-.card-body {
-  padding: 25px;
-}
-
-/* ========== FORMULARIOS ========== */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.form-group label {
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #2E86AB;
-  font-size: 0.9rem;
-}
-
-input,
-select,
-textarea {
-  padding: 12px;
-  border: 2px solid #E5F2F7;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  background: white;
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: #5DADE2;
-  box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
-}
-
-/* ========== AUTOCOMPLETE ========== */
-.autocomplete-container {
-  position: relative;
-}
-
-.autocomplete-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 2px solid #5DADE2;
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-  display: none;
-}
-
-.autocomplete-item {
-  padding: 12px;
-  cursor: pointer;
-  border-bottom: 1px solid #E5F2F7;
-  transition: background 0.2s ease;
-}
-
-.autocomplete-item:hover {
-  background: #F0F8FC;
-}
-
-.autocomplete-code {
-  font-weight: 600;
-  color: #2E86AB;
-}
-
-.autocomplete-name {
-  color: #6c757d;
-  font-size: 0.85rem;
-  margin-top: 2px;
-}
-
-/* ========== BOTONES ========== */
-.btn {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn-primary { background: #5DADE2; color: white; }
-.btn-success { background: #28a745; color: white; }
-.btn-danger { background: #dc3545; color: white; }
-.btn-warning { background: #ffc107; color: #212529; }
-.btn-secondary { background: #6c757d; color: white; }
-.btn-info { background: #17a2b8; color: white; }
-
-.btn-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.btn-group .btn {
-  flex: 1;
-  min-width: 200px;
-  white-space: nowrap;
-}
-
-/* ========== TABLAS ========== */
-.table-container {
-  overflow-x: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #E5F2F7;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  min-width: 600px;
-}
-
-th, td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #E5F2F7;
-}
-
-th {
-  background: #F0F8FC;
-  font-weight: 600;
-  color: #2E86AB;
-  font-size: 0.9rem;
-}
-
-tr:hover {
-  background: #F8FBFD;
-}
-
-.status-normal { background: #d4edda; color: #155724; }
-.status-low { background: #fff3cd; color: #856404; }
-.status-zero { background: #f8d7da; color: #721c24; }
-
-/* ========== MENSAJES ========== */
-.message {
-  padding: 12px 15px;
-  border-radius: 8px;
-  margin: 15px 0;
-  font-weight: 500;
-}
-
-.message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-.message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-.message.warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-.message.info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-
-/* ========== ESTADÍSTICAS ========== */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-}
-
-.stat-card {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
-  border-left: 4px solid #5DADE2;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #2E86AB;
-  margin-bottom: 5px;
-}
-
-.stat-label {
-  color: #6c757d;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* ========== MODAL DE VENTAS ========== */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 9999;
-  overflow-y: auto;
-  animation: fadeInModal 0.3s ease;
-}
-
-.modal-overlay.active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-@keyframes fadeInModal {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.modal-venta {
-  background: white;
-  border-radius: 15px;
-  max-width: 1000px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.4s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.modal-venta-header {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
-  color: white;
-  padding: 25px 30px;
-  border-radius: 15px 15px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.modal-venta-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.close-modal {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
-}
-
-.close-modal:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
-}
-
-.modal-venta-body {
-  padding: 30px;
-}
-
-.modal-section {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #E5F2F7;
-}
-
-.modal-section:last-child {
-  border-bottom: none;
-}
-
-.modal-section-title {
-  color: #2E86AB;
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.items-venta-list {
-  background: #F8FBFD;
-  border: 2px solid #E5F2F7;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.item-venta-row {
-  background: white;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 15px;
-  position: relative;
-  transition: all 0.3s;
-}
-
-.item-venta-row:hover {
-  border-color: #5DADE2;
-  box-shadow: 0 4px 12px rgba(93, 173, 226, 0.2);
-}
-
-.modal-venta-footer {
-  padding: 20px 30px;
-  background: #F8FBFD;
-  border-top: 2px solid #E5F2F7;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 0 0 15px 15px;
-}
-
-.total-venta-display {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #2E86AB;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.required-field::after {
-  content: " *";
-  color: #e74c3c;
-  font-weight: bold;
-}
-
-/* ============================================
-   🎨 REFINAMIENTO MOBILE-FIRST (max-width: 768px)
-   ============================================ */
-
-@media (max-width: 768px) {
-  
-  /* ===== 1. RESET DE ALTURAS FIJAS ===== */
-  html, body {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: manipulation;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #E8F4F8;
     height: auto !important;
-    min-height: 100dvh !important;
-    font-size: 14px;
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
   }
 
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  /* ========== CONTENEDORES PRINCIPALES ========== */
   .app-container {
-    display: block !important;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    display: flex;
+    position: relative;
     height: auto !important;
-    min-height: 100dvh !important;
+    min-height: 100dvh;
   }
 
-  .main-content {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: auto !important;
+  /* ========== MENÚ HAMBURGUESA ========== */
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 10000;
+    background: #2E86AB;
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
   }
 
-  /* ===== 2. ESPACIADO LATERAL SEGURO (Safe Area) ===== */
-  .content-header {
-    padding: 65px 16px 16px 16px !important; /* 🔧 Más aire lateral */
+  .menu-toggle:active {
+    transform: scale(0.95);
   }
 
-  .content-body {
-    padding: 16px !important; /* 🔧 Margen seguro */
+  /* ========== SIDEBAR ========== */
+  .sidebar {
+    width: 250px;
+    background: #2E86AB;
+    color: white;
+    flex-shrink: 0;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    min-height: 100vh;
   }
 
-  .card-body {
-    padding: 16px !important; /* 🔧 Aire interno */
+  .sidebar-header {
+    padding: 20px;
+    background: #1C5F7B;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  /* ===== 3. INPUTS FINGER-FRIENDLY ===== */
-  input, select, textarea {
-    padding: 14px 12px !important; /* 🔧 Altura táctil mínima */
-    font-size: 16px !important; /* 🔧 Evita zoom en iOS */
-    min-height: 48px; /* 🔧 Zona táctil Apple HIG */
-    border-radius: 10px; /* 🔧 Bordes más suaves */
+  .sidebar-header h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
   }
 
-  .form-group label {
+  .nav-menu {
+    list-style: none;
+    padding: 20px 0;
+  }
+
+  .nav-item {
+    margin: 5px 15px;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
     font-size: 0.9rem;
-    margin-bottom: 8px;
+  }
+
+  .nav-link:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    transform: translateX(5px);
+  }
+
+  .nav-link.active {
+    background: #5DADE2;
+    color: white;
     font-weight: 600;
   }
 
-  /* ===== 4. BOTONES MÁS GRANDES Y TÁCTILES ===== */
-  .btn {
-    width: 100% !important;
-    padding: 14px 20px !important; /* 🔧 Altura mínima 48px */
-    font-size: 0.95rem !important;
-    border-radius: 10px; /* 🔧 Bordes más suaves */
-    min-height: 48px; /* 🔧 Zona táctil Apple HIG */
-  }
-
-  .btn-group {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .btn-group .btn {
-    width: 100%;
-    min-width: auto;
-  }
-
-  /* ===== 5. TARJETAS CON MEJOR ELEVACIÓN ===== */
-  .card {
-    margin-bottom: 16px;
-    border-radius: 12px; /* 🔧 Bordes más redondeados */
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); /* 🔧 Sombra más pronunciada */
-    border: none; /* 🔧 Sin borde para efecto flotante */
-  }
-
-  .card-header {
-    padding: 16px !important;
-    font-size: 1rem;
-    border-radius: 12px 12px 0 0;
-  }
-
-  /* ===== 6. TIPOGRAFÍA OPTIMIZADA ===== */
-  .content-header h2 {
-    font-size: 1.25rem !important; /* 🔧 Tamaño legible sin ocupar mucho */
-    margin: 0;
-    line-height: 1.3;
-  }
-
-  .stat-value {
-    font-size: 1.75rem !important; /* 🔧 Tamaño balanceado */
-  }
-
-  .stat-label {
-    font-size: 0.85rem !important;
-    line-height: 1.4;
-  }
-
-  /* ===== 7. DASHBOARD: GRID 2 COLUMNAS ===== */
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr) !important; /* 🔧 2 columnas en móvil */
-    gap: 12px;
-  }
-
-  .stat-card {
-    padding: 16px !important;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 🔧 Más elevación */
-  }
-
-  /* ===== 8. MENÚ HAMBURGUESA ===== */
-  .menu-toggle {
-    display: block !important;
-    min-height: 48px; /* 🔧 Zona táctil */
-    min-width: 48px;
-  }
-
-  .sidebar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 280px;
-    max-width: 85vw;
-    z-index: 9998;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
-  }
-
-  .sidebar.open {
-    transform: translateX(0) !important;
-  }
-
-  /* ===== 9. FORMULARIOS: 1 COLUMNA ===== */
-  .form-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px;
-  }
-
-  /* ===== 10. TABLAS RESPONSIVAS ===== */
-  .table-container {
-    margin: 0 -16px; /* 🔧 Ocupa todo el ancho */
-    padding: 0 16px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  table {
-    font-size: 0.8rem;
-    min-width: 100%;
-  }
-
-  th, td {
-    padding: 10px 8px !important;
-    white-space: nowrap;
-  }
-
-  th {
-    font-size: 0.85rem;
-    position: sticky;
-    top: 0;
-    background: #F0F8FC;
-    z-index: 10;
-  }
-
-  /* ===== 11. MODAL RESPONSIVO ===== */
-  .modal-overlay.active {
-    padding: 8px !important;
-    align-items: flex-start;
-  }
-
-  .modal-venta {
-    margin: 8px 0;
-    max-height: 95vh;
-    border-radius: 12px;
-    width: 100% !important;
-  }
-
-  .modal-venta-header {
-    padding: 16px 20px !important;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .modal-venta-body {
-    padding: 16px !important;
-  }
-
-  .modal-venta-footer {
-    flex-direction: column !important;
-    gap: 12px;
-    padding: 16px 20px !important;
-    position: sticky;
-    bottom: 0;
-  }
-
-  .total-venta-display {
+  .nav-icon {
+    margin-right: 10px;
+    font-size: 1.1rem;
+    width: 20px;
     text-align: center;
-    width: 100%;
-    font-size: 1.3rem !important;
-    padding: 12px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
-  .modal-actions {
-    width: 100% !important;
-    flex-direction: column !important;
-    gap: 10px;
-  }
-
-  .modal-actions .btn {
-    width: 100% !important;
-  }
-
-  /* ===== 12. ACCIONES: STACK VERTICAL ===== */
-  .actions {
-    flex-direction: column !important;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-}
-
-/* ============================================
-   📱 PANTALLAS MUY PEQUEÑAS (max-width: 480px)
-   ============================================ */
-
-@media (max-width: 480px) {
-  
-  .menu-toggle {
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
+  /* ========== CONTENIDO PRINCIPAL ========== */
+  .main-content {
+    flex: 1;
+    overflow-y: auto;
+    background: #FAFBFC;
+    height: auto !important;
   }
 
   .content-header {
-    padding: 60px 12px 12px 12px !important;
+    background: white;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e9ecef;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   .content-header h2 {
-    font-size: 1.1rem !important;
+    color: #2E86AB;
+    font-size: 1.5rem;
+    font-weight: 600;
   }
 
   .content-body {
-    padding: 12px !important;
+    padding: 30px;
   }
 
-  /* Dashboard: 1 columna en pantallas muy pequeñas */
-  .stats-grid {
-    grid-template-columns: 1fr !important;
+  /* ========== TABS Y ANIMACIONES ========== */
+  .tab-content {
+    display: none !important;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-content.active {
+    display: block !important;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ========== TARJETAS (CARDS) ========== */
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+    margin-bottom: 25px;
+    overflow: hidden;
+    border: 1px solid #E5F2F7;
+  }
+
+  .card-header {
+    padding: 20px;
+    background: #F0F8FC;
+    border-bottom: 1px solid #E5F2F7;
+    font-weight: 600;
+    color: #2E86AB;
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  /* ========== FORMULARIOS ========== */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .form-group label {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2E86AB;
+    font-size: 0.9rem;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 12px;
+    border: 2px solid #E5F2F7;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: white;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #5DADE2;
+    box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+  }
+
+  /* ========== AUTOCOMPLETE ========== */
+  .autocomplete-container {
+    position: relative;
+  }
+
+  .autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #5DADE2;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+  }
+
+  .autocomplete-item {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #E5F2F7;
+    transition: background 0.2s ease;
+  }
+
+  .autocomplete-item:hover {
+    background: #F0F8FC;
+  }
+
+  .autocomplete-code {
+    font-weight: 600;
+    color: #2E86AB;
+  }
+
+  .autocomplete-name {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 2px;
+  }
+
+  /* ========== BOTONES ========== */
+  .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-primary {
+    background: #5DADE2;
+    color: white;
+  }
+
+  .btn-success {
+    background: #28a745;
+    color: white;
+  }
+
+  .btn-danger {
+    background: #dc3545;
+    color: white;
+  }
+
+  .btn-warning {
+    background: #ffc107;
+    color: #212529;
+  }
+
+  .btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .btn-info {
+    background: #17a2b8;
+    color: white;
+  }
+
+  .btn-group {
+    display: flex;
     gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
   }
 
-  .stat-card {
-    padding: 14px !important;
+  .btn-group .btn {
+    flex: 1;
+    min-width: 200px;
+    white-space: nowrap;
   }
 
-  .stat-value {
-    font-size: 1.6rem !important;
-  }
-
-  .stat-label {
-    font-size: 0.8rem !important;
+  /* ========== TABLAS ========== */
+  .table-container {
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5F2F7;
   }
 
   table {
-    font-size: 0.75rem;
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    min-width: 600px;
   }
 
-  th, td {
-    padding: 8px 6px !important;
-    font-size: 0.75rem;
+  th,
+  td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #E5F2F7;
   }
-}
 
-/* ============================================
-   🌄 LANDSCAPE MÓVIL
-   ============================================ */
+  th {
+    background: #F0F8FC;
+    font-weight: 600;
+    color: #2E86AB;
+    font-size: 0.9rem;
+  }
 
-@media (max-height: 500px) and (orientation: landscape) {
-  
+  tr:hover {
+    background: #F8FBFD;
+  }
+
+  .status-normal {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .status-low {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .status-zero {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  /* ========== MENSAJES ========== */
+  .message {
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: 500;
+  }
+
+  .message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .message.warning {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+  }
+
+  /* ========== ESTADÍSTICAS ========== */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #5DADE2;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2E86AB;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* ========== MODAL DE VENTAS ========== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    overflow-y: auto;
+    animation: fadeInModal 0.3s ease;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  @keyframes fadeInModal {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
   .modal-venta {
-    max-height: 95vh;
+    background: white;
+    border-radius: 15px;
+    max-width: 1000px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .modal-venta-header {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 25px 30px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-venta-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .close-modal {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+  }
+
+  .close-modal:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
   }
 
   .modal-venta-body {
-    padding: 15px;
+    padding: 30px;
   }
 
   .modal-section {
-    margin-bottom: 15px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #E5F2F7;
   }
-}
 
-/* ============================================
+  .modal-section:last-child {
+    border-bottom: none;
+  }
+
+  .modal-section-title {
+    color: #2E86AB;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .items-venta-list {
+    background: #F8FBFD;
+    border: 2px solid #E5F2F7;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .item-venta-row {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .item-venta-row:hover {
+    border-color: #5DADE2;
+    box-shadow: 0 4px 12px rgba(93, 173, 226, 0.2);
+  }
+
+  .modal-venta-footer {
+    padding: 20px 30px;
+    background: #F8FBFD;
+    border-top: 2px solid #E5F2F7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 15px 15px;
+  }
+
+  .total-venta-display {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2E86AB;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .required-field::after {
+    content: " *";
+    color: #e74c3c;
+    font-weight: bold;
+  }
+
+  /* ========== CARRITO DE VENTAS ========== */
+  .carrito-input-zone {
+    background: #F0F8FC;
+    border: 2px dashed #5DADE2;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .carrito-input-row {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 1fr 0.8fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .btn-agregar-carrito {
+    background: linear-gradient(135deg, #28a745, #20c997) !important;
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    min-height: 46px;
+  }
+
+  .btn-agregar-carrito:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  }
+
+  .carrito-table-container {
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 2px solid #E5F2F7;
+  }
+
+  .carrito-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: auto;
+  }
+
+  .carrito-table thead th {
+    background: #2E86AB;
+    color: white;
+    padding: 12px 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .carrito-table tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #E5F2F7;
+    font-size: 0.9rem;
+  }
+
+  .carrito-table tbody tr:hover {
+    background: #F0F8FC;
+  }
+
+  .carrito-total-row {
+    background: #F0F8FC !important;
+  }
+
+  .carrito-total-row td {
+    padding: 14px 15px !important;
+    font-size: 1rem !important;
+    border-top: 2px solid #2E86AB;
+  }
+
+  .btn-eliminar-item {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+  }
+
+  .btn-eliminar-item:hover {
+    background: #c82333;
+    transform: scale(1.05);
+  }
+
+  .autocomplete-venta-container {
+    position: relative;
+  }
+
+  .autocomplete-venta-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #5DADE2;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .autocomplete-venta-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #E5F2F7;
+    transition: background 0.2s ease;
+  }
+
+  .autocomplete-venta-item:hover {
+    background: #F0F8FC;
+  }
+
+  .autocomplete-venta-item strong {
+    color: #2E86AB;
+  }
+
+  .autocomplete-venta-item small {
+    color: #6c757d;
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ============================================
+   🎨 REFINAMIENTO MOBILE-FIRST (max-width: 768px)
+   ============================================ */
+
+  @media (max-width: 768px) {
+
+    /* Carrito responsive */
+    .carrito-input-row {
+      grid-template-columns: 1fr !important;
+      gap: 12px;
+    }
+
+    .carrito-input-zone {
+      padding: 16px;
+    }
+
+    .carrito-table {
+      font-size: 0.8rem;
+    }
+
+    .carrito-table thead th,
+    .carrito-table tbody td {
+      padding: 8px 10px;
+    }
+
+    /* ===== 1. RESET DE ALTURAS FIJAS ===== */
+    html,
+    body {
+      height: auto !important;
+      min-height: 100dvh !important;
+      font-size: 14px;
+    }
+
+    .app-container {
+      display: block !important;
+      height: auto !important;
+      min-height: 100dvh !important;
+    }
+
+    .main-content {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      height: auto !important;
+      min-height: auto !important;
+    }
+
+    /* ===== 2. ESPACIADO LATERAL SEGURO (Safe Area) ===== */
+    .content-header {
+      padding: 65px 16px 16px 16px !important;
+      /* 🔧 Más aire lateral */
+    }
+
+    .content-body {
+      padding: 16px !important;
+      /* 🔧 Margen seguro */
+    }
+
+    .card-body {
+      padding: 16px !important;
+      /* 🔧 Aire interno */
+    }
+
+    /* ===== 3. INPUTS FINGER-FRIENDLY ===== */
+    input,
+    select,
+    textarea {
+      padding: 14px 12px !important;
+      /* 🔧 Altura táctil mínima */
+      font-size: 16px !important;
+      /* 🔧 Evita zoom en iOS */
+      min-height: 48px;
+      /* 🔧 Zona táctil Apple HIG */
+      border-radius: 10px;
+      /* 🔧 Bordes más suaves */
+    }
+
+    .form-group label {
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    /* ===== 4. BOTONES MÁS GRANDES Y TÁCTILES ===== */
+    .btn {
+      width: 100% !important;
+      padding: 14px 20px !important;
+      /* 🔧 Altura mínima 48px */
+      font-size: 0.95rem !important;
+      border-radius: 10px;
+      /* 🔧 Bordes más suaves */
+      min-height: 48px;
+      /* 🔧 Zona táctil Apple HIG */
+    }
+
+    .btn-group {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-group .btn {
+      width: 100%;
+      min-width: auto;
+    }
+
+    /* ===== 5. TARJETAS CON MEJOR ELEVACIÓN ===== */
+    .card {
+      margin-bottom: 16px;
+      border-radius: 12px;
+      /* 🔧 Bordes más redondeados */
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      /* 🔧 Sombra más pronunciada */
+      border: none;
+      /* 🔧 Sin borde para efecto flotante */
+    }
+
+    .card-header {
+      padding: 16px !important;
+      font-size: 1rem;
+      border-radius: 12px 12px 0 0;
+    }
+
+    /* ===== 6. TIPOGRAFÍA OPTIMIZADA ===== */
+    .content-header h2 {
+      font-size: 1.25rem !important;
+      /* 🔧 Tamaño legible sin ocupar mucho */
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .stat-value {
+      font-size: 1.75rem !important;
+      /* 🔧 Tamaño balanceado */
+    }
+
+    .stat-label {
+      font-size: 0.85rem !important;
+      line-height: 1.4;
+    }
+
+    /* ===== 7. DASHBOARD: GRID 2 COLUMNAS ===== */
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      /* 🔧 2 columnas en móvil */
+      gap: 12px;
+    }
+
+    .stat-card {
+      padding: 16px !important;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      /* 🔧 Más elevación */
+    }
+
+    /* ===== 8. MENÚ HAMBURGUESA ===== */
+    .menu-toggle {
+      display: block !important;
+      min-height: 48px;
+      /* 🔧 Zona táctil */
+      min-width: 48px;
+    }
+
+    .sidebar {
+      position: fixed !important;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 280px;
+      max-width: 85vw;
+      z-index: 9998;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar.open {
+      transform: translateX(0) !important;
+    }
+
+    /* ===== 9. FORMULARIOS: 1 COLUMNA ===== */
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 16px;
+    }
+
+    /* ===== 10. TABLAS RESPONSIVAS ===== */
+    .table-container {
+      margin: 0 -16px;
+      /* 🔧 Ocupa todo el ancho */
+      padding: 0 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      font-size: 0.8rem;
+      min-width: 100%;
+    }
+
+    th,
+    td {
+      padding: 10px 8px !important;
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 0.85rem;
+      position: sticky;
+      top: 0;
+      background: #F0F8FC;
+      z-index: 10;
+    }
+
+    /* ===== 11. MODAL RESPONSIVO ===== */
+    .modal-overlay.active {
+      padding: 8px !important;
+      align-items: flex-start;
+    }
+
+    .modal-venta {
+      margin: 8px 0;
+      max-height: 95vh;
+      border-radius: 12px;
+      width: 100% !important;
+    }
+
+    .modal-venta-header {
+      padding: 16px 20px !important;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .modal-venta-body {
+      padding: 16px !important;
+    }
+
+    .modal-venta-footer {
+      flex-direction: column !important;
+      gap: 12px;
+      padding: 16px 20px !important;
+      position: sticky;
+      bottom: 0;
+    }
+
+    .total-venta-display {
+      text-align: center;
+      width: 100%;
+      font-size: 1.3rem !important;
+      padding: 12px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-actions {
+      width: 100% !important;
+      flex-direction: column !important;
+      gap: 10px;
+    }
+
+    .modal-actions .btn {
+      width: 100% !important;
+    }
+
+    /* ===== 12. ACCIONES: STACK VERTICAL ===== */
+    .actions {
+      flex-direction: column !important;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+  }
+
+  /* ============================================
+   📱 PANTALLAS MUY PEQUEÑAS (max-width: 480px)
+   ============================================ */
+
+  @media (max-width: 480px) {
+
+    .menu-toggle {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+    }
+
+    .content-header {
+      padding: 60px 12px 12px 12px !important;
+    }
+
+    .content-header h2 {
+      font-size: 1.1rem !important;
+    }
+
+    .content-body {
+      padding: 12px !important;
+    }
+
+    /* Dashboard: 1 columna en pantallas muy pequeñas */
+    .stats-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px;
+    }
+
+    .stat-card {
+      padding: 14px !important;
+    }
+
+    .stat-value {
+      font-size: 1.6rem !important;
+    }
+
+    .stat-label {
+      font-size: 0.8rem !important;
+    }
+
+    table {
+      font-size: 0.75rem;
+    }
+
+    th,
+    td {
+      padding: 8px 6px !important;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* ============================================
+   🌄 LANDSCAPE MÓVIL
+   ============================================ */
+
+  @media (max-height: 500px) and (orientation: landscape) {
+
+    .modal-venta {
+      max-height: 95vh;
+    }
+
+    .modal-venta-body {
+      padding: 15px;
+    }
+
+    .modal-section {
+      margin-bottom: 15px;
+    }
+  }
+
+  /* ============================================
    🍎 iOS SAFE AREA (iPhone X+)
    ============================================ */
 
-@supports (-webkit-touch-callout: none) {
-  input, select, textarea {
-    font-size: 16px !important; /* Evita zoom en iOS */
-  }
-}
+  @supports (-webkit-touch-callout: none) {
 
-/* ============================================
+    input,
+    select,
+    textarea {
+      font-size: 16px !important;
+      /* Evita zoom en iOS */
+    }
+  }
+
+  /* ============================================
    📊 ANALYTICS DASHBOARD
    ============================================ */
 
-#analyticsContainer {
-  animation: fadeIn 0.5s ease;
-}
-
-#analyticsContainer .stat-card {
-  min-height: 130px !important;
-  padding: 20px !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-#analyticsContainer .stat-value {
-  color: white !important;
-  font-size: 2.5rem !important;
-  font-weight: 700 !important;
-  margin-bottom: 8px !important;
-}
-
-#analyticsContainer .stat-label {
-  color: white !important;
-  font-size: 0.95rem !important;
-  font-weight: 500 !important;
-  opacity: 0.95 !important;
-}
-
-@media (max-width: 768px) {
-  #analyticsContainer canvas {
-    height: 200px !important;
+  #analyticsContainer {
+    animation: fadeIn 0.5s ease;
   }
 
-  #analyticsContainer .stats-grid {
-    grid-template-columns: 1fr !important;
+  #analyticsContainer .stat-card {
+    min-height: 130px !important;
+    padding: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
-}
-/* ======================================================
+
+  #analyticsContainer .stat-value {
+    color: white !important;
+    font-size: 2.5rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 8px !important;
+  }
+
+  #analyticsContainer .stat-label {
+    color: white !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    opacity: 0.95 !important;
+  }
+
+  @media (max-width: 768px) {
+    #analyticsContainer canvas {
+      height: 200px !important;
+    }
+
+    #analyticsContainer .stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* ======================================================
    TRANSFORMACIÓN DE TABLA A TARJETAS (SOLO MÓVIL)
    Pegar al final de Global_CSS.html
    ====================================================== */
 
-@media (max-width: 768px) {
+  @media (max-width: 768px) {
 
-  /* 1. Forzar que la tabla deje de comportarse como tabla */
-  #resultadosBusqueda table, 
-  #resultadosBusqueda thead, 
-  #resultadosBusqueda tbody, 
-  #resultadosBusqueda th, 
-  #resultadosBusqueda td, 
-  #resultadosBusqueda tr { 
-    display: block; 
-  }
+    /* 1. Forzar que la tabla deje de comportarse como tabla */
+    #resultadosBusqueda table,
+    #resultadosBusqueda thead,
+    #resultadosBusqueda tbody,
+    #resultadosBusqueda th,
+    #resultadosBusqueda td,
+    #resultadosBusqueda tr {
+      display: block;
+    }
 
-  /* 2. Ocultar los encabezados de la tabla (Código, Nombre, etc.) */
-  #resultadosBusqueda thead tr { 
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-  }
+    /* 2. Ocultar los encabezados de la tabla (Código, Nombre, etc.) */
+    #resultadosBusqueda thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
 
-  /* 3. Convertir cada FILA en una TARJETA */
-  #resultadosBusqueda tr { 
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 12px; /* Bordes redondeados */
-    margin-bottom: 15px; /* Espacio entre tarjetas */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* Sombra suave */
-    padding: 15px;
-    position: relative;
-  }
+    /* 3. Convertir cada FILA en una TARJETA */
+    #resultadosBusqueda tr {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      /* Bordes redondeados */
+      margin-bottom: 15px;
+      /* Espacio entre tarjetas */
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+      /* Sombra suave */
+      padding: 15px;
+      position: relative;
+    }
 
-  /* 4. Estilar cada CELDA (ahora renglones) */
-  #resultadosBusqueda td { 
-    border: none;
-    border-bottom: 1px solid #eee; 
-    position: relative;
-    padding-left: 40%; /* Espacio para la etiqueta a la izquierda */
-    padding-top: 10px;
-    padding-bottom: 10px;
-    text-align: right; /* El dato alineado a la derecha */
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-  }
+    /* 4. Estilar cada CELDA (ahora renglones) */
+    #resultadosBusqueda td {
+      border: none;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      padding-left: 40%;
+      /* Espacio para la etiqueta a la izquierda */
+      padding-top: 10px;
+      padding-bottom: 10px;
+      text-align: right;
+      /* El dato alineado a la derecha */
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
 
-  /* 5. Poner las ETIQUETAS (Labels) simuladas a la izquierda */
-  #resultadosBusqueda td::before { 
-    position: absolute;
-    left: 10px;
-    width: 35%; 
-    white-space: nowrap;
-    text-align: left;
-    font-weight: bold;
-    color: #2E86AB; /* Tu color azul corporativo */
-  }
+    /* 5. Poner las ETIQUETAS (Labels) simuladas a la izquierda */
+    #resultadosBusqueda td::before {
+      position: absolute;
+      left: 10px;
+      width: 35%;
+      white-space: nowrap;
+      text-align: left;
+      font-weight: bold;
+      color: #2E86AB;
+      /* Tu color azul corporativo */
+    }
 
-  /* Asignar nombres a cada columna según su orden */
-  #resultadosBusqueda td:nth-of-type(1)::before { content: "Código"; }
-  #resultadosBusqueda td:nth-of-type(2)::before { content: "Nombre"; }
-  #resultadosBusqueda td:nth-of-type(3)::before { content: "Grupo"; }
-  #resultadosBusqueda td:nth-of-type(4)::before { content: "Stock Total"; }
-  #resultadosBusqueda td:nth-of-type(5)::before { content: "Precio"; }
+    /* Asignar nombres a cada columna según su orden */
+    #resultadosBusqueda td:nth-of-type(1)::before {
+      content: "Código";
+    }
 
-  /* 6. TRATAMIENTO ESPECIAL PARA EL BOTÓN (Última columna) */
-  #resultadosBusqueda td:nth-of-type(6) {
-    border-bottom: none; /* Sin linea abajo */
-    padding: 15px 0 0 0; /* Un poco de aire arriba */
-    display: block; /* Ocupar todo el ancho */
-    text-align: center;
-    padding-left: 0;
-  }
-  
-  /* Quitar etiqueta automática para el botón */
-  #resultadosBusqueda td:nth-of-type(6)::before {
-    content: "";
-    display: none;
-  }
+    #resultadosBusqueda td:nth-of-type(2)::before {
+      content: "Nombre";
+    }
 
-  /* Hacer el botón GIGANTE y fácil de tocar */
-  #resultadosBusqueda button {
-    width: 100% !important;
-    padding: 12px !important;
-    font-size: 16px !important;
-    display: block;
-    margin-top: 5px;
+    #resultadosBusqueda td:nth-of-type(3)::before {
+      content: "Grupo";
+    }
+
+    #resultadosBusqueda td:nth-of-type(4)::before {
+      content: "Stock Total";
+    }
+
+    #resultadosBusqueda td:nth-of-type(5)::before {
+      content: "Precio";
+    }
+
+    /* 6. TRATAMIENTO ESPECIAL PARA EL BOTÓN (Última columna) */
+    #resultadosBusqueda td:nth-of-type(6) {
+      border-bottom: none;
+      /* Sin linea abajo */
+      padding: 15px 0 0 0;
+      /* Un poco de aire arriba */
+      display: block;
+      /* Ocupar todo el ancho */
+      text-align: center;
+      padding-left: 0;
+    }
+
+    /* Quitar etiqueta automática para el botón */
+    #resultadosBusqueda td:nth-of-type(6)::before {
+      content: "";
+      display: none;
+    }
+
+    /* Hacer el botón GIGANTE y fácil de tocar */
+    #resultadosBusqueda button {
+      width: 100% !important;
+      padding: 12px !important;
+      font-size: 16px !important;
+      display: block;
+      margin-top: 5px;
+    }
   }
-}
-  </style>
+</style>

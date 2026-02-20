@@ -89,7 +89,7 @@ function obtenerHistorial(filtros) {
         
         // Si es una VENTA, intentar obtener información del vendedor
         if (tipoMov === 'VENTA' && ventasSheet) {
-          const infoVenta = obtenerInfoVentaPorObservacion(mov[colMov['Observaciones']], ventasSheet);
+          const infoVenta = obtenerInfoVentaPorObservacion(mov[colMov['Observaciones']], ventasSheet, codigoProducto);
           if (infoVenta) {
             registro.vendedor = infoVenta.vendedor;
             registro.entregador = infoVenta.entregador;
@@ -224,6 +224,7 @@ function obtenerDatosAnalíticos() {
     const alertasStock = calcularAlertasStock(datosInventario, datosProductos);
     const mejoresVendedores = calcularMejoresVendedores(datosVentas);
     const topLugares = calcularTopLugares(datosVentas);
+    const ventasPorCanal = calcularVentasPorCanal(datosVentas);
     const recomendaciones = generarRecomendaciones(kpis, alertasStock.length);
     
     return {
@@ -234,6 +235,7 @@ function obtenerDatosAnalíticos() {
       alertasStock,
       mejoresVendedores,
       topLugares,
+      ventasPorCanal,
       recomendaciones
     };
     
@@ -318,9 +320,8 @@ function calcularKPIsDashboard(datosVentas, datosInventario, datosProductos) {
         Logger.log("✅ Venta del mes actual - Fila " + (i + 1) + ": Envío $" + envio);
       }
       
-      // Calcular COGS
-      const itemsTexto = datosVentas[i][6] || "";
-      const items = parsearItems(itemsTexto);
+      // Calcular COGS usando parsearItems (compatible con formato CODE:QTY)
+      const items = parsearItems(datosVentas[i][6] || "");
       
       for (const item of items) {
         const costoUnitario = costoPromedioMap[item.codigo] || 0;
@@ -341,17 +342,19 @@ function calcularKPIsDashboard(datosVentas, datosInventario, datosProductos) {
   
   // Calcular Valor de Inventario
   let stockTotal = 0;
-  let productosConStock = 0;
+  const codigosConStock = new Set();
   let valorInventarioAlCosto = 0;
   
   for (let i = 1; i < datosInventario.length; i++) {
+    const codigo = (datosInventario[i][0] || "").toString().toUpperCase();
     const cantidad = Number(datosInventario[i][2]) || 0;
     const costo = Number(datosInventario[i][4]) || 0;
     
     stockTotal += cantidad;
-    if (cantidad > 0) productosConStock++;
+    if (cantidad > 0 && codigo) codigosConStock.add(codigo);
     valorInventarioAlCosto += (cantidad * costo);
   }
+  const productosConStock = codigosConStock.size;
   
   // Calcular KPIs
   const rotacionInventario = valorInventarioAlCosto > 0 ? 
@@ -400,7 +403,7 @@ function calcularVentasMensuales(datosVentas, datosProductos) {
   for (let i = 1; i < datosVentas.length; i++) {
     const fecha = new Date(datosVentas[i][1]);
     const mesAño = Utilities.formatDate(fecha, Session.getScriptTimeZone(), "yyyy-MM");
-    const total = Number(datosVentas[i][9]) || 0;
+    const total = Number(datosVentas[i][9]) || 0; // Col J - Total de la línea
     
     if (!ventasPorMes[mesAño]) {
       ventasPorMes[mesAño] = { ventas: 0, costos: 0 };
@@ -408,9 +411,8 @@ function calcularVentasMensuales(datosVentas, datosProductos) {
     
     ventasPorMes[mesAño].ventas += total;
     
-    // Calcular costos del mes
-    const itemsTexto = datosVentas[i][6] || "";
-    const items = parsearItems(itemsTexto);
+    // Calcular costos usando parsearItems (compatible con formato CODE:QTY)
+    const items = parsearItems(datosVentas[i][6] || "");
     
     for (const item of items) {
       const costo = obtenerCostoProducto(item.codigo, datosProductos);
@@ -453,10 +455,9 @@ function calcularTopProductos(datosVentas, datosProductos) {
     };
   }
   
-  // Procesar ventas
+  // Procesar ventas usando parsearItems (compatible con formato CODE:QTY)
   for (let i = 1; i < datosVentas.length; i++) {
-    const itemsTexto = datosVentas[i][6] || "";
-    const items = parsearItems(itemsTexto);
+    const items = parsearItems(datosVentas[i][6] || "");
     
     for (const item of items) {
       if (!productoStats[item.codigo]) {
@@ -707,6 +708,30 @@ function calcularTopLugares(datosVentas) {
     }))
     .sort((a, b) => b.entregas - a.entregas)
     .slice(0, 4);
+}
+
+function calcularVentasPorCanal(datosVentas) {
+  const canalStats = {};
+  
+  for (let i = 1; i < datosVentas.length; i++) {
+    const canal = datosVentas[i][14] || "No especificado";
+    const total = Number(datosVentas[i][9]) || 0;
+    
+    if (!canalStats[canal]) {
+      canalStats[canal] = { cantidad: 0, monto: 0 };
+    }
+    
+    canalStats[canal].cantidad++;
+    canalStats[canal].monto += total;
+  }
+  
+  return Object.keys(canalStats)
+    .map(c => ({
+      canal: c,
+      cantidad: canalStats[c].cantidad,
+      monto: Math.round(canalStats[c].monto * 100) / 100
+    }))
+    .sort((a, b) => b.monto - a.monto);
 }
 
 function generarRecomendaciones(kpis, alertasCount) {

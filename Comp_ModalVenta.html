@@ -1,106 +1,167 @@
- <!-- MODAL DE VENTAS -->
-  <div id="modalVenta" class="modal-overlay">
-    <div class="modal-venta">
-      <div class="modal-venta-header">
-        <h2>🛒 Registro de Venta</h2>
-        <button class="close-modal" onclick="cerrarModalVenta()">&times;</button>
-      </div>
+<!-- MODAL DE VENTAS - Carrito Master-Detail -->
+<div id="modalVenta" class="modal-overlay">
+  <div class="modal-venta">
+    <div class="modal-venta-header">
+      <h2>🛒 Registro de Venta</h2>
+      <button class="close-modal" onclick="cerrarModalVenta()">&times;</button>
+    </div>
 
-      <form id="formVenta" onsubmit="registrarVentaDetallada(event)">
-        <div class="modal-venta-body">
+    <form id="formVenta" onsubmit="registrarVentaDetallada(event)">
+      <div class="modal-venta-body">
 
-          <!-- SECCIÓN: INFORMACIÓN DEL VENDEDOR -->
-          <div class="modal-section">
-            <div class="modal-section-title">👤 Información del Vendedor</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="required-field">Nombre del Vendedor</label>
-                <input type="text" id="ventaVendedor" placeholder="ej: Dylan Rizo" required>
-              </div>
-              <div class="form-group">
-                <label>Persona que realizó la entrega</label>
-                <input type="text" id="ventaEntregador" placeholder="ej: Jean">
-              </div>
+        <!-- SECCIÓN: INFORMACIÓN DEL VENDEDOR -->
+        <div class="modal-section">
+          <div class="modal-section-title">👤 Información del Vendedor</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required-field">Nombre del Vendedor</label>
+              <input type="text" id="ventaVendedor" placeholder="ej: Dylan Rizo" required>
+            </div>
+            <div class="form-group">
+              <label>Persona que realizó la entrega</label>
+              <input type="text" id="ventaEntregador" placeholder="ej: Jean">
             </div>
           </div>
+        </div>
 
-          <!-- SECCIÓN: PRODUCTOS VENDIDOS -->
-          <div class="modal-section">
-            <div class="modal-section-title">📦 Productos Vendidos</div>
-            <div class="items-venta-list" id="itemsVentaList">
-              <!-- Los items se generarán dinámicamente -->
-            </div>
-            <button type="button" class="btn-add-item" onclick="agregarItemVenta()">
-              ➕ Agregar Producto
-            </button>
-          </div>
-
-          <!-- SECCIÓN: MONTOS -->
-          <div class="modal-section">
-            <div class="modal-section-title">💰 Información de Pago</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="required-field">Monto Cobrado</label>
-                <input type="number" id="ventaMontoCobrado" min="0" step="0.01" placeholder="0.00" required onchange="calcularTotalVenta()">
-              </div>
-              <div class="form-group">
-                <label>Envío Cobrado</label>
-                <input type="number" id="ventaEnvioCobrado" min="0" step="0.01" placeholder="0.00" value="0" onchange="calcularTotalVenta()">
-              </div>
+        <!-- SECCIÓN: CANAL DE VENTA -->
+        <div class="modal-section">
+          <div class="modal-section-title">📱 Canal de Venta</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required-field">¿Por dónde te contactó el cliente?</label>
+              <select id="ventaCanalVenta" required>
+                <option value="">Seleccione un canal...</option>
+                <option value="Facebook Marketplace">Facebook Marketplace</option>
+                <option value="WhatsApp">WhatsApp</option>
+                <option value="Instagram">Instagram</option>
+                <option value="TikTok">TikTok</option>
+                <option value="Presencial/Local">Presencial/Local</option>
+              </select>
             </div>
           </div>
+        </div>
 
-          <!-- SECCIÓN: UBICACIONES -->
-          <div class="modal-section">
-            <div class="modal-section-title">📍 Ubicaciones</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="required-field">Lugar de Extracción del Inventario</label>
-                <select id="ventaLugarExtraccion" required>
+        <!-- SECCIÓN: CARRITO DE PRODUCTOS -->
+        <div class="modal-section">
+          <div class="modal-section-title">📦 Productos Vendidos</div>
+
+          <!-- Zona de inputs para agregar al carrito -->
+          <div class="carrito-input-zone">
+            <div class="carrito-input-row">
+              <div class="form-group carrito-input-producto">
+                <label class="required-field">Producto</label>
+                <div class="autocomplete-venta-container">
+                  <input type="text" id="carritoProductoInput" class="item-codigo-input"
+                    placeholder="Buscar código o nombre..." onkeyup="buscarProductoCarrito()"
+                    onblur="setTimeout(() => ocultarAutocompleteCarrito(), 200)">
+                  <div id="autocompleteCarrito" class="autocomplete-venta-dropdown"></div>
+                </div>
+              </div>
+              <div class="form-group carrito-input-almacen">
+                <label class="required-field">Almacén Origen</label>
+                <select id="carritoAlmacenInput">
                   <option value="">Seleccione...</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label class="required-field">Lugar donde se hizo la entrega</label>
-                <input type="text" id="ventaLugarEntrega" placeholder="ej: Casa del cliente, Oficina, etc." required>
+              <div class="form-group carrito-input-precio">
+                <label>Precio Unit.</label>
+                <input type="number" id="carritoPrecioInput" min="0" step="0.01" placeholder="0.00">
+              </div>
+              <div class="form-group carrito-input-cantidad">
+                <label class="required-field">Cantidad</label>
+                <input type="number" id="carritoCantidadInput" min="0.01" step="0.01" placeholder="1">
+              </div>
+              <div class="form-group carrito-input-btn">
+                <label>&nbsp;</label>
+                <button type="button" class="btn btn-agregar-carrito" onclick="agregarAlCarrito()">
+                  ➕ Agregar
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- SECCIÓN: HORARIOS -->
-          <div class="modal-section">
-            <div class="modal-section-title">🕐 Horarios de Entrega</div>
-            <div class="form-grid">
-              <div class="form-group">
-                <label class="required-field">Hora de Salida</label>
-                <input type="time" id="ventaHoraSalida" required>
-              </div>
-              <div class="form-group">
-                <label>Hora de Finalización</label>
-                <input type="time" id="ventaHoraFinalizacion">
-              </div>
-            </div>
+          <!-- Tabla del carrito -->
+          <div class="carrito-table-container">
+            <table class="carrito-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Almacén</th>
+                  <th>Cant.</th>
+                  <th>Precio Unit.</th>
+                  <th>Subtotal</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="carritoBody">
+                <tr id="carritoVacio">
+                  <td colspan="6" style="text-align:center; color:#999; padding:20px;">
+                    🛒 Agrega productos al carrito usando el formulario de arriba
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="carrito-total-row">
+                  <td colspan="4" style="text-align:right; font-weight:700;">Subtotal Productos:</td>
+                  <td id="carritoSubtotalDisplay" style="font-weight:700; color:#2E86AB;">$0.00</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
+        </div>
 
-          <!-- SECCIÓN: OBSERVACIONES -->
-          <div class="modal-section">
+        <!-- SECCIÓN: ENVÍO -->
+        <div class="modal-section">
+          <div class="modal-section-title">🚚 Costo de Envío</div>
+          <div class="form-grid">
             <div class="form-group">
-              <label>Observaciones Adicionales</label>
-              <textarea id="ventaObservaciones" rows="3" placeholder="Notas adicionales sobre la venta..."></textarea>
+              <label>Envío Cobrado</label>
+              <input type="number" id="ventaEnvioCobrado" min="0" step="0.01" placeholder="0.00" value="0"
+                onchange="actualizarTotalVenta()">
+            </div>
+            <div class="form-group">
+              <label class="required-field">Lugar donde se hizo la entrega</label>
+              <input type="text" id="ventaLugarEntrega" placeholder="ej: Casa del cliente, Oficina, etc." required>
             </div>
           </div>
-
         </div>
 
-        <div class="modal-venta-footer">
-          <div class="total-venta-display">
-            Total: $<span id="totalVentaDisplay">0.00</span>
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="btn btn-secondary" onclick="cerrarModalVenta()">Cancelar</button>
-            <button type="submit" class="btn btn-success">💾 Registrar Venta</button>
+        <!-- SECCIÓN: HORARIOS -->
+        <div class="modal-section">
+          <div class="modal-section-title">🕐 Horarios de Entrega</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="required-field">Hora de Salida</label>
+              <input type="time" id="ventaHoraSalida" required>
+            </div>
+            <div class="form-group">
+              <label>Hora de Finalización</label>
+              <input type="time" id="ventaHoraFinalizacion">
+            </div>
           </div>
         </div>
-      </form>
-    </div>
+
+        <!-- SECCIÓN: OBSERVACIONES -->
+        <div class="modal-section">
+          <div class="form-group">
+            <label>Observaciones Adicionales</label>
+            <textarea id="ventaObservaciones" rows="3" placeholder="Notas adicionales sobre la venta..."></textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-venta-footer">
+        <div class="total-venta-display">
+          Total: $<span id="totalVentaDisplay">0.00</span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModalVenta()">Cancelar</button>
+          <button type="submit" class="btn btn-success">💾 Registrar Venta</button>
+        </div>
+      </div>
+    </form>
   </div>
+</div>
